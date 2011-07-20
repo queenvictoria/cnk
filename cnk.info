@@ -1,0 +1,5 @@
+; part of our profile
+
+name = Cashmere and Kaye
+description = Create a Drupal Commerce site for Cashmere and Kaye
+core = 7.x
