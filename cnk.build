@@ -1,9 +1,6 @@
-; what is the difference between make and build ? in the cossey / buildkit example 
-; `build` gets drupal core and patches it ( `distro` ) then retrieves the profile 
-; and `make` gets contrib modules ( via buildkits drupal-org.make file ) and 
-; additions from cossey
-
-; so build would run first
+; build runs first. it is the single file that begets all others.
+; The installation profile referred to in the build stub should be the projects profile (ie itself).
+; To import elements from other profiles you can use an 'include' statement in your profile make file.
 
 ; Using Build Kit for Drupal Core and associated patches
 includes[] = http://drupalcode.org/project/buildkit.git/blob_plain/refs/heads/7.x-2.x:/distro.make
@@ -12,5 +9,5 @@ includes[] = http://drupalcode.org/project/buildkit.git/blob_plain/refs/heads/7.
 
 projects[cnk][type] = "profile"
 projects[cnk][download][type] = "git"
-projects[cnk][download][url] = "git@github.com:petercossey/merch.git"
+projects[cnk][download][url] = "git@github.com:queenvictoria/cnk.git"
 projects[cnk][download][branch] = "master"
