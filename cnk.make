@@ -11,6 +11,10 @@
 ; Include Build Kit install profile makefile via URL
 includes[] = http://drupalcode.org/project/buildkit.git/blob_plain/refs/heads/7.x-2.x:/drupal-org.make
 
+; bring in other stuff from cossey's merch profile
+; ------------------------------------------------
+includes[] = https://raw.github.com/petercossey/merch/master/merch.make
+
 ; Contrib
 ; -------
 ; http://drupal.org/project/commerce
