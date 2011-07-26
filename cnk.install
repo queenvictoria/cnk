@@ -1,13 +1,736 @@
 <?php
-//	things to do while installing our profile
 
 /**
- * Implement hook_install().
+ *	cnk profile install hooks - things to do when install is run
+	
+	looks like the site shortcuts still haven't taken even though the module is now enabled 
+	roles aren't happening either
+
+TO DO
+	shortcuts
+v	GST
+	GST rules
+	locale
+	imagecache presets
+	default currencies
+	
+ */
+
+/**
+ * @file
+ * Performs a standard Drupal installation with additional configuration of the
+ * Drupal Commerce modules and components.
+ */
+
+// Define some Commerce Kickstart specific components.
+define('KICKSTART_DEFAULT_THEME', 'bartik');
+define('KICKSTART_ADMIN_THEME', 'seven');
+
+/**
+ * Implements hook_install().
  *
  * Perform actions to set up the site for this profile.
  */
-function cnk_profile_install() {
-//	include_once DRUPAL_ROOT . '/profiles/standard/standard.install';
-//	standard_install();
+function cnk_install() {
+  // Add text formats.
+  $filtered_html_format = array(
+    'format' => 'filtered_html',
+    'name' => 'Filtered HTML',
+    'weight' => 0,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // HTML filter.
+      'filter_html' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 2,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+  $filtered_html_format = (object) $filtered_html_format;
+  filter_format_save($filtered_html_format);
+
+  $full_html_format = array(
+    'format' => 'full_html',
+    'name' => 'Full HTML',
+    'weight' => 1,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+  $full_html_format = (object) $full_html_format;
+  filter_format_save($full_html_format);
+
+
+  // Set some variables
+  $acme_settings = array(
+    'image_jpeg_quality' => '90',
+  );
+
+  foreach ($acme_settings as $v_name => $v_value) {
+    variable_set($v_name, $v_value);
+  }
+  
+
+  // Enable some standard blocks.
+  $default_theme = variable_get('theme_default', KICKSTART_DEFAULT_THEME);
+  $admin_theme = KICKSTART_ADMIN_THEME;
+  $values = array(
+    array(
+      'module' => 'system',
+      'delta' => 'main',
+      'theme' => $default_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'search',
+      'delta' => 'form',
+      'theme' => $default_theme,
+      'status' => 0, // Do not enable the search block.
+      'weight' => -1,
+      'region' => 'sidebar_first',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'node',
+      'delta' => 'recent',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 10,
+      'region' => 'dashboard_main',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'user',
+      'delta' => 'login',
+      'theme' => $default_theme,
+      'status' => 1,
+      'weight' => 10, // Display the user login block below the cart block.
+      'region' => 'sidebar_first',
+      'pages' => "cart\ncheckout/*", // And hide it on cart / checkout pages.
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'navigation',
+      'theme' => $default_theme,
+      'status' => 0, // Do not enable the navigation menu block.
+      'weight' => 0,
+      'region' => 'sidebar_first',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'powered-by',
+      'theme' => $default_theme,
+      'status' => 1,
+      'weight' => 10,
+      'region' => 'footer',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'help',
+      'theme' => $default_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'help',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'main',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'help',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'help',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'user',
+      'delta' => 'login',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 10,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'user',
+      'delta' => 'new',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'dashboard_sidebar',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'search',
+      'delta' => 'form',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => -10,
+      'region' => 'dashboard_sidebar',
+      'pages' => '',
+      'cache' => -1,
+    ),
+  );
+  $query = db_insert('block')->fields(array('module', 'delta', 'theme', 'status', 'weight', 'region', 'pages', 'cache'));
+  foreach ($values as $record) {
+    $query->values($record);
+  }
+  $query->execute();
+
+  // Insert default pre-defined node types into the database. For a complete
+  // list of available node type attributes, refer to the node type API
+  // documentation at: http://api.drupal.org/api/HEAD/function/hook_node_info.
+  $types = array(
+    array(
+      'type' => 'page',
+      'name' => st('Basic page'),
+      'base' => 'node_content',
+      'description' => st("Use <em>basic pages</em> for your static content, such as an 'About us' page."),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+    ),
+    array(
+      'type' => 'article',
+      'name' => st('Article'),
+      'base' => 'node_content',
+      'description' => st('Use <em>articles</em> for time-sensitive content like news, press releases or blog posts.'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+    ),
+  );
+
+  foreach ($types as $type) {
+    $type = node_type_set_defaults($type);
+    node_type_save($type);
+    node_add_body_field($type);
+  }
+
+  // Insert default pre-defined RDF mapping into the database.
+  if ( function_exists('rdf_mapping_save') ) {
+  $rdf_mappings = array(
+    array(
+      'type' => 'node',
+      'bundle' => 'page',
+      'mapping' => array(
+        'rdftype' => array('foaf:Document'),
+      ),
+    ),
+    array(
+      'type' => 'node',
+      'bundle' => 'article',
+      'mapping' => array(
+        'field_image' => array(
+          'predicates' => array('og:image', 'rdfs:seeAlso'),
+          'type' => 'rel',
+        ),
+        'field_tags' => array(
+          'predicates' => array('dc:subject'),
+          'type' => 'rel',
+        ),
+      ),
+    ),
+  );
+  foreach ($rdf_mappings as $rdf_mapping) {
+    rdf_mapping_save($rdf_mapping);
+  }
+  }
+
+  // Default "Basic page" to not be promoted and have comments disabled.
+  variable_set('node_options_page', array('status'));
+  variable_set('comment_page', COMMENT_NODE_HIDDEN);
+
+  // Don't display date and author information for "Basic page" nodes by default.
+  variable_set('node_submitted_page', FALSE);
+
+  // Enable user picture support and set the default to a square thumbnail option.
+  variable_set('user_pictures', '1');
+  variable_set('user_picture_dimensions', '1024x1024');
+  variable_set('user_picture_file_size', '800');
+  variable_set('user_picture_style', 'thumbnail');
+
+  // Allow visitor account creation.
+  variable_set('user_register', USER_REGISTER_VISITORS);
+
+  // Create a default vocabulary named "Tags", enabled for the 'article' content type.
+  $description = st('Use tags to group articles on similar topics into categories.');
+  $help = st('Enter a comma-separated list of words to describe your content.');
+  $vocabulary = (object) array(
+    'name' => 'Tags',
+    'description' => $description,
+    'machine_name' => 'tags',
+    'help' => $help,
+
+  );
+  taxonomy_vocabulary_save($vocabulary);
+
+  $field = array(
+    'field_name' => 'field_' . $vocabulary->machine_name,
+    'type' => 'taxonomy_term_reference',
+    // Set cardinality to unlimited for tagging.
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'settings' => array(
+      'allowed_values' => array(
+        array(
+          'vocabulary' => $vocabulary->machine_name,
+          'parent' => 0,
+        ),
+      ),
+    ),
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name' => 'field_' . $vocabulary->machine_name,
+    'entity_type' => 'node',
+    'label' => $vocabulary->name,
+    'bundle' => 'article',
+    'description' => $vocabulary->help,
+    'widget' => array(
+      'type' => 'taxonomy_autocomplete',
+      'weight' => -4,
+    ),
+    'display' => array(
+      'default' => array(
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 10,
+      ),
+      'teaser' => array(
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 10,
+      ),
+    ),
+  );
+  field_create_instance($instance);
+
+
+  // Create an image field named "Image", enabled for the 'article' content type.
+  // Many of the following values will be defaulted, they're included here as an illustrative examples.
+  // See http://api.drupal.org/api/function/field_create_field/7
+
+  $field = array(
+    'field_name' => 'field_image',
+    'type' => 'image',
+    'cardinality' => 1,
+    'translatable' => TRUE,
+    'locked' => FALSE,
+    'indexes' => array('fid' => array('fid')),
+    'settings' => array(
+      'uri_scheme' => 'public',
+      'default_image' => FALSE,
+    ),
+    'storage' => array(
+      'type' => 'field_sql_storage',
+      'settings' => array(),
+    ),
+  );
+  field_create_field($field);
+
+
+  // Many of the following values will be defaulted, they're included here as an illustrative examples.
+  // See http://api.drupal.org/api/function/field_create_instance/7
+  $instance = array(
+    'field_name' => 'field_image',
+    'entity_type' => 'node',
+    'label' => 'Image',
+    'bundle' => 'article',
+    'description' => st('Upload an image to go with this article.'),
+    'required' => FALSE,
+
+    'settings' => array(
+      'file_directory' => 'field/image',
+      'file_extensions' => 'png gif jpg jpeg',
+      'max_filesize' => '',
+      'max_resolution' => '',
+      'min_resolution' => '',
+      'alt_field' => TRUE,
+      'title_field' => '',
+    ),
+
+    'widget' => array(
+      'type' => 'image_image',
+      'settings' => array(
+        'progress_indicator' => 'throbber',
+        'preview_image_style' => 'thumbnail',
+      ),
+      'weight' => -1,
+    ),
+
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'large', 'image_link' => ''),
+        'weight' => -1,
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'medium', 'image_link' => 'content'),
+        'weight' => -1,
+      ),
+    ),
+  );
+  field_create_instance($instance);
+
+  // Enable default permissions for system roles.
+//  $filtered_html_permission = filter_permission_name($filtered_html_format);
+ // user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content', 'access comments', $filtered_html_permission));
+//  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access content', 'access comments', 'post comments', 'skip comment approval', $filtered_html_permission));
+
+  // Create a default role for site administrators, with all available permissions assigned.
+  $admin_role = new stdClass();
+  $admin_role->name = 'administrator';
+  $admin_role->weight = 2;
+  user_role_save($admin_role);
+  user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
+  // Set this as the administrator role.
+  variable_set('user_admin_role', $admin_role->rid);
+
+  // Assign user 1 the "administrator" role.
+  db_insert('users_roles')
+    ->fields(array('uid' => 1, 'rid' => $admin_role->rid))
+    ->execute();
+
+  // Create a Home link in the main menu.
+  $item = array(
+    'link_title' => st('Home'),
+    'link_path' => '<front>',
+    'menu_name' => 'main-menu',
+  );
+  // Do not save this home menu item for now.
+  // menu_link_save($item);
+
+  // Update the menu router information.
+  menu_rebuild();
+
+  // Enable the admin theme.
+  db_update('system')
+    ->fields(array('status' => 1))
+    ->condition('type', 'theme')
+    ->condition('name', 'seven')
+    ->execute();
+  variable_set('admin_theme', 'seven');
+  variable_set('node_admin_theme', '1');
+
+  // Perform additional non-standard installation configuration of the Commerce
+  // modules and components.
+  _commerce_kickstart_install();
+	_cnk_install();
 }
-?>
+
+
+/**
+ * Performs additional configuration for the CNK profile
+ */
+function _cnk_install() {
+//	more menu items
+//	$set = shortcut_set_load(st('Store administration'));
+//	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
+//	shortcut_set_save($set);
+	
+//	storekeeper role
+	$storeadmin_role = new stdClass();
+	$storeadmin_role->name = 'storekeeper';
+	$storeadmin_role->weight = 2;
+	user_role_save($storeadmin_role);
+//  user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
+  // Set this as the administrator role.
+//  variable_set('user_admin_role', $admin_role->rid);
+
+  // Assign user 1 the "storekeeper" role.
+  db_insert('users_roles')
+    ->fields(array('uid' => 1, 'rid' => $storeadmin_role->rid))
+    ->execute();
+	
+//	gst
+  db_insert('commerce_tax_rate')
+    ->fields(array(
+		'name' => 'gst',
+		'title' => 'GST',
+		'display_title' => 'GST',
+		'rate' => '0.1',
+		'type' => 'vat',
+		'description' => 'Australian Goods and Services tax (10%)',
+//		'rules_component' => 1,
+		'module' => 'commerce_tax_ui'
+	))
+    ->execute();
+
+//	default currency
+	variable_set('commerce_default_currency', 'AUD');
+//	enabled currencies
+	$currencies = array('AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'JPY', 'NZD', 'SGD', 'USD');
+	variable_set('commerce_enabled_currencies', $currencies);
+
+}
+
+
+/**
+ * Performs additional configuration for Drupal Commerce modules and components.
+ */
+function _commerce_kickstart_install() {
+  // Enable Commerce blocks.
+  $default_theme = variable_get('theme_default', KICKSTART_DEFAULT_THEME);
+  $admin_theme = KICKSTART_ADMIN_THEME;
+  $values = array(
+    array(
+      'module' => 'commerce_cart',
+      'delta' => 'cart',
+      'theme' => $default_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'sidebar_first',
+      'pages' => "cart\ncheckout/*",
+      'cache' => -1,
+    ),
+  );
+  $query = db_insert('block')->fields(array('module', 'delta', 'theme', 'status', 'weight', 'region', 'pages', 'cache'));
+  foreach ($values as $record) {
+    $query->values($record);
+  }
+  $query->execute();
+
+  // Insert a product display node type into the database.
+  $types = array(
+    array(
+      'type' => 'product_display',
+      'name' => st('Product display'),
+      'base' => 'node_content',
+      'description' => st('Use <em>product displays</em> to present Add to Cart form for products to your customers.'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+    ),
+  );
+
+  foreach ($types as $type) {
+    $type = node_type_set_defaults($type);
+    node_type_save($type);
+    node_add_body_field($type);
+  }
+
+  // Update "Product" comment and author information settings.
+  variable_set('comment_product_display', COMMENT_NODE_HIDDEN);
+  variable_set('node_submitted_product_display', FALSE);
+
+  // Create a default Catalog vocabulary for the Product display node type.
+  $description = st('Describes a hierarchy for the product catalog.');
+  $vocabulary = (object) array(
+    'name' => st('Catalog'),
+    'description' => $description,
+    'machine_name' => 'catalog',
+    'help' => '',
+  );
+  taxonomy_vocabulary_save($vocabulary);
+
+  $field = array(
+    'field_name' => 'taxonomy_' . $vocabulary->machine_name,
+    'type' => 'taxonomy_term_reference',
+    'cardinality' => 1,
+    'settings' => array(
+      'allowed_values' => array(
+        array(
+          'vocabulary' => $vocabulary->machine_name,
+          'parent' => 0,
+        ),
+      ),
+    ),
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name' => 'taxonomy_' . $vocabulary->machine_name,
+    'entity_type' => 'node',
+    'label' => st('Catalog category'),
+    'bundle' => 'product_display',
+    'description' => '',
+    'widget' => array(
+      'type' => 'options_select',
+    ),
+  );
+  field_create_instance($instance);
+
+  // Add a default image field to the basic product type.
+  $instance = array(
+    'field_name' => 'field_image',
+    'entity_type' => 'commerce_product',
+    'label' => st('Image'),
+    'bundle' => 'product',
+    'description' => st('Upload an image for this product.'),
+    'required' => FALSE,
+
+    'settings' => array(
+      'file_directory' => 'field/image',
+      'file_extensions' => 'png gif jpg jpeg',
+      'max_filesize' => '',
+      'max_resolution' => '',
+      'min_resolution' => '',
+      'alt_field' => TRUE,
+      'title_field' => '',
+    ),
+
+    'widget' => array(
+      'type' => 'image_image',
+      'settings' => array(
+        'progress_indicator' => 'throbber',
+        'preview_image_style' => 'thumbnail',
+      ),
+      'weight' => -1,
+    ),
+
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'medium', 'image_link' => 'file'),
+        'weight' => -1,
+      ),
+      'full' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'medium', 'image_link' => 'file'),
+        'weight' => -1,
+      ),
+      'line_item' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'thumbnail', 'image_link' => ''),
+        'weight' => -1,
+      ),
+      'node_full' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'medium', 'image_link' => 'file'),
+        'weight' => -1,
+      ),
+      'node_teaser' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'thumbnail', 'image_link' => 'content'),
+        'weight' => -1,
+      ),
+      'node_rss' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'medium', 'image_link' => ''),
+        'weight' => -1,
+      ),
+    ),
+  );
+  field_create_instance($instance);
+
+  // Add a product reference field to the Product display node type.
+  $field = array(
+    'field_name' => 'field_product',
+    'type' => 'commerce_product_reference',
+    'cardinality' => 1,
+    'translatable' => FALSE,
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name' => 'field_product',
+    'entity_type' => 'node',
+    'label' => st('Product'),
+    'bundle' => 'product_display',
+    'description' => 'Choose a product to display for sale.',
+    'required' => TRUE,
+
+    'widget' => array(
+      'type' => 'options_select',
+    ),
+
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'commerce_cart_add_to_cart_form',
+      ),
+      'full' => array(
+        'label' => 'hidden',
+        'type' => 'commerce_cart_add_to_cart_form',
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'commerce_cart_add_to_cart_form',
+      ),
+    ),
+  );
+  field_create_instance($instance);
+
+  // Give checkout access to anonymous and authenticated users.
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access checkout'));
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access checkout'));
+
+  // Disable Views' Advanced Help module nag message until it's production ready.
+  variable_set('views_hide_help_message', TRUE);
+
+  // Add a shortcut set for store administration.
+  $set = new stdClass;
+  $set->title = st('Store administration');
+  $set->links = array(
+    array('link_path' => 'admin/commerce/products/add', 'link_title' => st('Add product')),
+    array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display')),
+    array('link_path' => 'admin/commerce/products', 'link_title' => st('View products')),
+    array('link_path' => 'admin/commerce/orders', 'link_title' => st('View orders')),
+    array('link_path' => 'admin/commerce/config', 'link_title' => st('Configure store')),
+  );
+  shortcut_set_save($set);
+
+  // Apply the shortcut set to the first user.
+  shortcut_set_assign_user($set, (object) array('uid' => 1));
+}

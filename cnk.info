@@ -3,3 +3,113 @@
 name = Cashmere and Kaye
 description = Create a Drupal Commerce site for Cashmere and Kaye
 core = 7.x
+version = "0.1"
+
+; INSTALL FILES
+
+files[] = "cnk.profile"
+
+; CORE
+; Core
+dependencies[] = contact
+dependencies[] = dblog
+dependencies[] = field_ui
+dependencies[] = file
+dependencies[] = menu
+dependencies[] = path
+dependencies[] = taxonomy
+dependencies[] = toolbar
+dependencies[] = block
+
+; Core other
+dependencies[] = image
+dependencies[] = list
+dependencies[] = number
+dependencies[] = options
+
+; dependencies[] = "color"
+; dependencies[] = "comment"
+; dependencies[] = "contextual"
+dependencies[] = "dashboard"
+dependencies[] = "help"
+; dependencies[] = "dblog"
+; dependencies[] = "search"
+dependencies[] = "shortcut"
+dependencies[] = "overlay"
+; dependencies[] = "rdf"
+
+
+; Drupal commerce requirements
+dependencies[] = addressfield
+dependencies[] = ctools
+dependencies[] = entity
+dependencies[] = rules
+dependencies[] = views
+dependencies[] = commerce
+dependencies[] = commerce_ui
+dependencies[] = commerce_cart
+dependencies[] = commerce_checkout
+dependencies[] = commerce_paypal
+dependencies[] = commerce_paypal_wps
+
+dependencies[] = commerce_tax
+dependencies[] = commerce_tax_ui
+dependencies[] = commerce_product
+dependencies[] = commerce_product_ui
+dependencies[] = commerce_product_reference
+dependencies[] = commerce_product_pricing
+dependencies[] = commerce_product_pricing_ui
+dependencies[] = commerce_order_ui
+dependencies[] = commerce_order
+dependencies[] = commerce_line_item
+dependencies[] = commerce_line_item_ui
+dependencies[] = commerce_customer
+dependencies[] = commerce_customer_ui
+
+; CONTRIB
+; dependencies[] = "addthis"
+; dependencies[] = "boxes"
+; dependencies[] = "calendar"
+; dependencies[] = "colorbox"
+; dependencies[] = "context"
+; dependencies[] = "context_ui"
+; dependencies[] = "ctools"
+; dependencies[] = "date_api"
+; dependencies[] = "email"
+; dependencies[] = "entity"
+; dependencies[] = "features"
+; dependencies[] = "feeds"
+; dependencies[] = "feeds_ui"
+; dependencies[] = "flag"
+; dependencies[] = "globalredirect"
+; dependencies[] = "job_scheduler"
+; dependencies[] = "jquery_update"
+; dependencies[] = "link"
+; dependencies[] = "logintoboggan"
+; dependencies[] = "mailing_list"
+; dependencies[] = "markdown"
+; dependencies[] = "media"
+; 2011.03.18 media gallery failing on install of profile
+; dependencies[] = "media_gallery"
+; dependencies[] = "menu_block"
+; dependencies[] = "messaging"
+; dependencies[] = "mollom"
+; dependencies[] = "multiform"
+; dependencies[] = "nodequeue"
+; dependencies[] = "notifications"
+; dependencies[] = "page_title"
+; dependencies[] = "pathauto"
+; dependencies[] = "redirect"
+; dependencies[] = "rules"
+; dependencies[] = "site_map"
+; dependencies[] = "strongarm"
+; dependencies[] = "styles"
+; dependencies[] = "styles_ui"
+; dependencies[] = "token"
+; dependencies[] = "transliteration"
+; dependencies[] = "typekit"
+; dependencies[] = "views"
+; dependencies[] = "views_ui"
+; dependencies[] = "webform"
+; dependencies[] = "wysiwyg"
+; dependencies[] = "xmlsitemap"

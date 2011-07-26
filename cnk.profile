@@ -1,1 +1,5 @@
-; part of our profile
+<?php
+/*
+	CNK profile
+*/
+?>
