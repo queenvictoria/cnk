@@ -4,8 +4,8 @@ whale:cnk rossetti$ git init
 whale:cnk rossetti$ touch README
 whale:cnk rossetti$ git add .
 whale:cnk rossetti$ git commit -m "initial import"
-whale:cnk rossetti$ git remote add origin git@github.com:queenvictoria/CNK.git
+whale:cnk rossetti$ git remote add origin git@github.com:queenvictoria/cnk.git
 whale:cnk rossetti$ git push origin master
 
 
-$ drush si --sites-subdir=sandbox.cashmereandkaye.com --db-url="mysqli://root:un53cur3@localhost/cnk-sandbox" cnk --site-name="CNK sandbox"
+$ drush si --sites-subdir=sandbox.local --db-url="mysqli://[dbuser]:[dbpass]@localhost/cnk-sandbox" cnk --site-name="CNK sandbox"
