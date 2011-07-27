@@ -66,6 +66,12 @@ dependencies[] = commerce_line_item_ui
 dependencies[] = commerce_customer
 dependencies[] = commerce_customer_ui
 
+; things to make commerce work socially
+dependencies[] = "votingapi"
+dependencies[] = "fivestar"
+dependencies[] = "addthis"
+
+
 ; CONTRIB
 ; dependencies[] = "addthis"
 ; dependencies[] = "boxes"

@@ -39,3 +39,8 @@ projects[commerce][version] = "1.x-dev"
 projects[commerce_paypal][subdir] = "contrib"
 projects[commerce_paypal][version] = "1.x-dev"
 
+; social bits for commerce
+projects[votingapi][subdir] = "contrib"
+projects[fivestar][subdir] = "contrib"
+projects[fivestar][version] = "2.x-dev"
+projects[fivestar][subdir] = "addthis"

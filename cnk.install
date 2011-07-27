@@ -517,6 +517,9 @@ function _cnk_install() {
 	$currencies = array('AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'JPY', 'NZD', 'SGD', 'USD');
 	variable_set('commerce_enabled_currencies', $currencies);
 
+//	allow product types to use fivestar
+	
+
 }
 
 
