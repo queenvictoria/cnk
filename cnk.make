@@ -27,9 +27,15 @@ projects[entity][subdir] = "contrib"
 projects[entity][version] = "1.x-dev"
 projects[rules][subdir] = "contrib"
 projects[rules][version] = "2.x-dev"
+
+; http://drupal.org/node/1227018
+; patch against rules short names
+projects[rules][patch][1227018] = schema-fix-1227018-p0.patch
+
 projects[views][subdir] = "contrib"
 projects[views][version] = "3.x-dev"
 projects[commerce][subdir] = "contrib"
 projects[commerce][version] = "1.x-dev"
 projects[commerce_paypal][subdir] = "contrib"
 projects[commerce_paypal][version] = "1.x-dev"
+
