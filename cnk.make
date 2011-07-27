@@ -30,7 +30,7 @@ projects[rules][version] = "2.x-dev"
 
 ; http://drupal.org/node/1227018
 ; patch against rules short names
-projects[rules][patch][1227018] = schema-fix-1227018-p0.patch
+projects[rules][patch][1227018] = http://drupal.org/files/issues/schema-fix-1227018-p0.patch
 
 projects[views][subdir] = "contrib"
 projects[views][version] = "3.x-dev"
