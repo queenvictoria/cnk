@@ -44,5 +44,7 @@ projects[votingapi][subdir] = "contrib"
 projects[fivestar][subdir] = "contrib"
 projects[fivestar][version] = "2.x-dev"
 projects[addthis][subdir] = "addthis"
+projects[addthis][version] = "2.1-beta1"
 projects[fbconnect][subdir] = "fbconnect"
+projects[fbconnect][version] = "2.x-dev"
 
