@@ -70,6 +70,8 @@ dependencies[] = commerce_customer_ui
 dependencies[] = "votingapi"
 dependencies[] = "fivestar"
 dependencies[] = "addthis"
+; not currently configurable
+dependencies[] = "fbconnect"
 
 
 ; CONTRIB

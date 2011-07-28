@@ -43,4 +43,6 @@ projects[commerce_paypal][version] = "1.x-dev"
 projects[votingapi][subdir] = "contrib"
 projects[fivestar][subdir] = "contrib"
 projects[fivestar][version] = "2.x-dev"
-projects[fivestar][subdir] = "addthis"
+projects[addthis][subdir] = "addthis"
+projects[fbconnect][subdir] = "fbconnect"
+

@@ -517,9 +517,61 @@ function _cnk_install() {
 	$currencies = array('AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'JPY', 'NZD', 'SGD', 'USD');
 	variable_set('commerce_enabled_currencies', $currencies);
 
-//	allow product types to use fivestar
-	
+	_cnk_configure_fivestar("product_display");
+}
 
+
+/**
+ *	allow product types to use fivestar
+ */
+function _cnk_configure_fivestar($content_type) {
+	if ( module_exists("fivestar") ) {
+/*
+-	fivestar_feedback_product_display	i:1;
+-	fivestar_labels_enable_product_display	i:1;
+-	fivestar_labels_product_display	a:11:{i:0;s:13:"Cancel rating";i:1;s:4:"Poor";i:2;s:4:"Okay";i:3;s:4:"Good";i:4;s:5:"Great";i:5;s:7:"Awesome";i:6;s:20:"Give it @star/@count";i:7;s:20:"Give it @star/@count";i:8;s:20:"Give it @star/@count";i:9;s:20:"Give it @star/@count";i:10;s:20:"Give it @star/@count";}
+-	fivestar_position_product_display	s:5:"below";
+-	fivestar_position_teaser_product_display	s:6:"hidden";
+-	fivestar_product_display	i:1;
+-	fivestar_stars_product_display	s:1:"5";
+-	fivestar_style_product_display	s:7:"average";
+-	fivestar_tags	s:4:"vote";
+-	fivestar_text_product_display	s:4:"dual";
+-	fivestar_title_product_display	i:1;
+-	fivestar_unvote_product_display	i:0;
+-	fivestar_widget	s:52:"sites/all/modules/fivestar/widgets/hearts/hearts.css";
+*/
+		$fivestar_path = drupal_get_path("module", "fivestar");
+//	which widget are we using?
+		variable_set("fivestar_widget", $fivestar_path . "/widgets/hearts/hearts.css");
+		variable_set("fivestar_tags", "vote");
+//	enable for our content type
+		variable_set("fivestar_" . $content_type, 1);
+//	number of stars
+		variable_set("fivestar_stars_" . $content_type, 5);
+//	position of stars
+		variable_set("fivestar_position_" . $content_type, "below");
+		variable_set("fivestar_position_teaser_" . $content_type, "below");
+//	display of stars
+		variable_set("fivestar_style_" . $content_type, "average");
+		variable_set("fivestar_text_" . $content_type, "dual");
+		variable_set("fivestar_title_" . $content_type, 1);
+		variable_set("fivestar_feedback_" . $content_type, 1);
+		variable_set("fivestar_unvote_" . $content_type, 0);
+//	labels 
+		variable_set("fivestar_labels_enable_" . $content_type, 1);
+		variable_set("fivestar_labels_" . $content_type, 
+			array(
+				"Cancel rating",
+				"Poor",
+				"Okay",
+				"Good",
+				"Great",
+				"Awesome"
+			)
+		);
+
+	}
 }
 
 
