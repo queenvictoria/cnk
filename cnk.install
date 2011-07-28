@@ -428,9 +428,9 @@ function cnk_install() {
   field_create_instance($instance);
 
   // Enable default permissions for system roles.
-//  $filtered_html_permission = filter_permission_name($filtered_html_format);
- // user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content', 'access comments', $filtered_html_permission));
-//  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access content', 'access comments', 'post comments', 'skip comment approval', $filtered_html_permission));
+  $filtered_html_permission = filter_permission_name($filtered_html_format);
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content', 'access comments', $filtered_html_permission));
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access content', 'access comments', 'post comments', 'skip comment approval', $filtered_html_permission));
 
   // Create a default role for site administrators, with all available permissions assigned.
   $admin_role = new stdClass();
@@ -483,7 +483,58 @@ function _cnk_install() {
 //	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
 //	shortcut_set_save($set);
 	
-//	storekeeper role
+	_cnk_configure_roles();
+	_cnk_configure_currency();
+	_cnk_configure_gst(10);
+	_cnk_configure_fivestar("product_display");
+	
+	_cnk_dummy_content();
+}
+
+
+/**
+ *	Create a dummy product and product display	
+ */
+function _cnk_dummy_content() {
+	$i = 1;
+	
+	db_insert('commerce_product')
+		->fields(array(
+			'sku' => 'test-' . $i,
+			'type' => 'product',
+			'title' => 'Test ' . $i,
+			'status' => 1
+		))
+	->execute();
+	
+	db_insert('field_data_commerce_price')
+		->fields(array(
+			'entity_type' => 'commerce_price',
+			'bundle' => 'product',
+			'entity_id' => $i,
+			'commerce_price_amount' => '9900',
+			'commerce_price_currency_code' => 'AUD',
+			'commerce_price_data' = array('include_tax'=>'gst')
+		))
+	->execute();
+
+	db_insert('node')
+		->fields(array(
+			'type' => 'product_display',
+			'title' => 'Test ' . $i,
+			'status' => 1
+		))
+	->execute();
+	
+	
+}
+
+
+/**
+ *	add the storekeeper role
+ */
+function _cnk_configure_roles() {
+	//	storekeeper role
 	$storeadmin_role = new stdClass();
 	$storeadmin_role->name = 'storekeeper';
 	$storeadmin_role->weight = 2;
@@ -493,31 +544,41 @@ function _cnk_install() {
 //  variable_set('user_admin_role', $admin_role->rid);
 
   // Assign user 1 the "storekeeper" role.
-  db_insert('users_roles')
-    ->fields(array('uid' => 1, 'rid' => $storeadmin_role->rid))
-    ->execute();
-	
-//	gst
+	db_insert('users_roles')
+		->fields(array('uid' => 1, 'rid' => $storeadmin_role->rid))
+		->execute();
+}
+
+
+/*
+ * set the default and available currencies
+ */
+function _cnk_configure_currency() {
+//	default currency
+	variable_set('commerce_default_currency', 'AUD');
+//	enabled currencies
+	$currencies = array('AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'JPY', 'NZD', 'SGD', 'USD');
+	variable_set('commerce_enabled_currencies', $currencies);	
+}
+
+
+/*
+ *	setup GST. pass in the rate (defaults to 10%)
+ */
+function _cnk_configure_gst($rate=10) {
+	//	gst
   db_insert('commerce_tax_rate')
     ->fields(array(
 		'name' => 'gst',
 		'title' => 'GST',
 		'display_title' => 'GST',
-		'rate' => '0.1',
+		'rate' => $rate/100,
 		'type' => 'vat',
 		'description' => 'Australian Goods and Services tax (10%)',
 //		'rules_component' => 1,
 		'module' => 'commerce_tax_ui'
 	))
     ->execute();
-
-//	default currency
-	variable_set('commerce_default_currency', 'AUD');
-//	enabled currencies
-	$currencies = array('AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'JPY', 'NZD', 'SGD', 'USD');
-	variable_set('commerce_enabled_currencies', $currencies);
-
-	_cnk_configure_fivestar("product_display");
 }
 
 
@@ -570,7 +631,6 @@ function _cnk_configure_fivestar($content_type) {
 				"Awesome"
 			)
 		);
-
 	}
 }
 
