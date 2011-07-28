@@ -38,13 +38,22 @@ projects[commerce][subdir] = "contrib"
 projects[commerce][version] = "1.x-dev"
 projects[commerce_paypal][subdir] = "contrib"
 projects[commerce_paypal][version] = "1.x-dev"
+projects[commerce_product_display_manager][subdir] = "contrib"
+projects[commerce_product_display_manager][version] = "1.x-dev"
+projects[devel][subdir] = "developer"
+projects[commerce_devel][subdir] = "developer"
+projects[commerce_devel][version] = "1.x-dev"
 
 ; social bits for commerce
 projects[votingapi][subdir] = "contrib"
 projects[fivestar][subdir] = "contrib"
 projects[fivestar][version] = "2.x-dev"
-projects[addthis][subdir] = "addthis"
+projects[addthis][subdir] = "contrib"
 projects[addthis][version] = "2.1-beta1"
-projects[fbconnect][subdir] = "fbconnect"
+projects[fbconnect][subdir] = "contrib"
 projects[fbconnect][version] = "2.x-dev"
-
+; http://drupal.org/node/795128
+; current patches to fbconnect
+projects[fbconnect][patch][795128] = http://drupal.org/files/issues/795128-Port_fbconnect_to_d7-144.patch
+projects[fbconnect][patch][795128] = http://drupal.org/files/issues/795128-README-update-145.patch
+; perhaps copy in https://raw.github.com/facebook/php-sdk/v2.1.2/src/facebook.php to sites/all/libraries/facebook/facebook.php
