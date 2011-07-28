@@ -130,9 +130,9 @@ function _cnk_dummy_content() {
 //		node->language = LANGUAGE_NONE;
 		
 		module_load_include('inc', 'commerce_pdm', 'commerce_pdm');
-		if ( function_exists('_commerce_pdm_get_node_reference_field_name') ) {
-			$field_name = _commerce_pdm_get_node_reference_field_name($node);
-			print "field name " . $field_name;
+		if ( function_exists('_commerce_pdm_get_product_reference_fields') ) {
+			$field_names = _commerce_pdm_get_product_reference_fields($node);
+			print_r($field_names);
 		} else {
 			print "Module commerce_pdm not loaded";
 		}

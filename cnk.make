@@ -55,5 +55,5 @@ projects[fbconnect][version] = "2.x-dev"
 ; http://drupal.org/node/795128
 ; current patches to fbconnect
 projects[fbconnect][patch][795128] = http://drupal.org/files/issues/795128-Port_fbconnect_to_d7-144.patch
-projects[fbconnect][patch][795128] = http://drupal.org/files/issues/795128-README-update-145.patch
+projects[fbconnect][patch][795128r] = http://drupal.org/files/issues/795128-README-update-145.patch
 ; perhaps copy in https://raw.github.com/facebook/php-sdk/v2.1.2/src/facebook.php to sites/all/libraries/facebook/facebook.php
