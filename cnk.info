@@ -28,7 +28,7 @@ dependencies[] = number
 dependencies[] = options
 
 ; dependencies[] = "color"
-; dependencies[] = "comment"
+dependencies[] = "comment"
 ; dependencies[] = "contextual"
 dependencies[] = "dashboard"
 dependencies[] = "help"
