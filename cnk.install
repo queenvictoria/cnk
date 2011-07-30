@@ -49,6 +49,7 @@ function cnk_install() {
 	_commerce_kickstart_install();
 	
 //	our own install
+	include("cnk.settings.inc");
 	_cnk_install();
 }
 
@@ -66,16 +67,39 @@ function _cnk_install() {
 	_cnk_configure_currency();
 	_cnk_configure_gst(10);
 	_cnk_configure_fivestar("product_display");
+	_cnk_configure_facebook();
 	
-	_cnk_dummy_content();
+	_cnk_dummy_content(10);
+}
+
+
+function _cnk_configure_facebook() {
+	//	need to link in app for anything to work
+	if ( module_exists("fb_app") ) {
+		db_insert('fb_app')
+			->fields(array(
+				'label' => 'connect',
+				'id' => $fb_key,
+				'apikey' => $fb_key,
+				'secret' => $fb_secret,
+			))
+		->execute();
+	}
+	//	need to turn on fb_user
+	//	need permission for email for fb_user
+	
+	if ( module_exists("fbconnect") ) {
+		variable_set('fbconnect_appid', 240277216003683);
+		variable_set('fbconnect_skey', "f0289a9fa816bc57df40f164f1452f0d");
+		variable_set('fbconnect_language_code', "en_AU");
+	}
 }
 
 
 /**
  *	Create a dummy product and product display	
  */
-function _cnk_dummy_content() {
-	$num_products = 10;
+function _cnk_dummy_content($num_products = 10) {
 /*
 //	taken from commerce_devel_generate.drush.inc
 	module_load_include('inc', 'commerce_devel_generate', 'devel_generate');

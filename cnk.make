@@ -51,14 +51,25 @@ projects[fivestar][subdir] = "contrib"
 projects[fivestar][version] = "2.x-dev"
 projects[addthis][subdir] = "contrib"
 projects[addthis][version] = "2.1-beta1"
-projects[fbconnect][subdir] = "contrib"
-projects[fbconnect][version] = "2.x-dev"
+; fbconnect
+; projects[fbconnect][subdir] = "contrib"
+; projects[fbconnect][version] = "2.x-dev"
 ; http://drupal.org/node/795128
 ; current patches to fbconnect
-projects[fbconnect][patch][795128] = http://drupal.org/files/issues/795128-Port_fbconnect_to_d7-144.patch
-projects[fbconnect][patch][795128r] = http://drupal.org/files/issues/795128-README-update-145.patch
-; perhaps copy in https://raw.github.com/facebook/php-sdk/v2.1.2/src/facebook.php to sites/all/libraries/facebook/facebook.php
-projects[] = fbconnect
+; projects[fbconnect][patch][795128] = http://drupal.org/files/issues/795128-Port_fbconnect_to_d7-144.patch
+; projects[fbconnect][patch][795128r] = http://drupal.org/files/issues/795128-README-update-145.patch
+
+; or fb w/ fb_user
+projects[fb][subdir] = "contrib"
+projects[fb][version] = "3.x-dev"
+; permissions fix which should allow fb_user to work without failing
+projects[fb][patch][1173898] = http://drupal.org/files/issues/fb-permission-1173898-D7-no-prefix.patch
+
+; libraries for either
+; projects[] = fbconnect
+projects[] = fb
 libraries[facebook-php-sdk][download][type] = "get"
-libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk/tarball/v2.1.1"
-libraries[facebook-php-sdk][destination] = "libraries/fbconnect"   
+libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk/"
+libraries[facebook-php-sdk][download][tag] = v2.1.2
+libraries[facebook-php-sdk][destination] = "libraries/facebook-php-sdk"   
+

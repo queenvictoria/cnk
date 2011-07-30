@@ -75,7 +75,11 @@ dependencies[] = "votingapi"
 dependencies[] = "fivestar"
 dependencies[] = "addthis"
 ; not currently configurable
-dependencies[] = "fbconnect"
+; dependencies[] = "fbconnect"
+dependencies[] = "fb"
+dependencies[] = "fb_connect"
+dependencies[] = "fb_registration"
+dependencies[] = "fb_user"
 
 
 ; CONTRIB
