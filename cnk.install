@@ -109,7 +109,7 @@ function _cnk_dummy_content() {
 				'revision_id' => 1,
 				'language' => 'und',
 				'delta' => 0,
-				'commerce_price_amount' => '9900',
+				'commerce_price_amount' => 1100 * ($i+1),
 				'commerce_price_currency_code' => 'AUD',
 				'commerce_price_data' => serialize(array(
 					'components' => array(),
@@ -127,19 +127,28 @@ function _cnk_dummy_content() {
 		$node->promote = 1;
 		$node->uid = 1;
 		$node->body = "Body Body body";
-//		node->language = LANGUAGE_NONE;
+		$node->language = LANGUAGE_NONE;
+#		$node->language = "und";
 		
 		module_load_include('inc', 'commerce_pdm', 'commerce_pdm');
 		if ( function_exists('_commerce_pdm_get_product_reference_fields') ) {
 			$field_names = _commerce_pdm_get_product_reference_fields($node);
-			print_r($field_names);
+			$reference_field = $field_names[0];
+//	doesnt work, causes errors.
+//	Warning: array_flip() [function.array-flip]: Can only flip STRING and INTEGER values! in DrupalDefaultEntityController->load() (line 177 of /Users/rossetti/Documents/jobs/laudanum/cashmereandkaye/public_html/drupal-commerce/includes/entity.inc).
+//			$node->{$field_names[0]}['und'][0]['value'] = $i;
 		} else {
+			$reference_field = 'field_product';
 			print "Module commerce_pdm not loaded";
 		}
 		
+		$node_lanugage = $node->language;
+		$product_id = $i;
+		$node->{$reference_field}[$node_lanugage][] = array('product_id' => $product_id);
+		
 ##		$node->field_data_commerce_product[0]['value'] = $i
 #		$key = 'data_commerce_product';
-#		$node->{'field_'.$key}[$node->language][0]['value'] = $value;
+//		$node->{'field_'.$key}[$node->language][0]['value'] = $value;
 		node_save($node);
 /*
 		db_insert('node')

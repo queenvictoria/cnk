@@ -27,6 +27,7 @@ projects[entity][subdir] = "contrib"
 projects[entity][version] = "1.x-dev"
 projects[rules][subdir] = "contrib"
 projects[rules][version] = "2.x-dev"
+projects[libraries][subdir] = "contrib"
 
 ; http://drupal.org/node/1227018
 ; patch against rules short names
@@ -57,3 +58,7 @@ projects[fbconnect][version] = "2.x-dev"
 projects[fbconnect][patch][795128] = http://drupal.org/files/issues/795128-Port_fbconnect_to_d7-144.patch
 projects[fbconnect][patch][795128r] = http://drupal.org/files/issues/795128-README-update-145.patch
 ; perhaps copy in https://raw.github.com/facebook/php-sdk/v2.1.2/src/facebook.php to sites/all/libraries/facebook/facebook.php
+projects[] = fbconnect
+libraries[facebook-php-sdk][download][type] = "get"
+libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk/tarball/v2.1.1"
+libraries[facebook-php-sdk][destination] = "libraries/fbconnect"   
