@@ -67,7 +67,7 @@ projects[fb][patch][1173898] = http://drupal.org/files/issues/fb-permission-1173
 
 ; libraries for either
 ; projects[] = fbconnect
-projects[] = fb
+; projects[] = fb
 libraries[facebook-php-sdk][download][type] = "get"
 libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk/"
 libraries[facebook-php-sdk][download][tag] = v2.1.2

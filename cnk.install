@@ -74,7 +74,7 @@ function _cnk_install() {
 
 
 function _cnk_configure_facebook() {
-	//	need to link in app for anything to work
+//	need to link in app for anything to work
 	if ( module_exists("fb_app") ) {
 		db_insert('fb_app')
 			->fields(array(
@@ -88,6 +88,7 @@ function _cnk_configure_facebook() {
 	//	need to turn on fb_user
 	//	need permission for email for fb_user
 	
+//	a different module that just handles auth
 	if ( module_exists("fbconnect") ) {
 		variable_set('fbconnect_appid', 240277216003683);
 		variable_set('fbconnect_skey', "f0289a9fa816bc57df40f164f1452f0d");
