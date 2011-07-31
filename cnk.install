@@ -75,15 +75,50 @@ function _cnk_install() {
 
 function _cnk_configure_facebook() {
 //	need to link in app for anything to work
+	print "_cnk_configure_facebook\n";
 	if ( module_exists("fb_app") ) {
+		print "has fb_app\n";
+//	include drupal_get_path('module', 'fb') . '/fb.admin.inc';
+//		module_load_include('inc', 'fb', 'fb.admin');
+		module_load_include('inc', 'fb_app');
+		module_load_include('inc', 'fb_app', 'fb_app.admin');
+		print "Loaded fb_app\n";
+		
+		$form_state = array();
+		$form_state['values']['label'] = 'connect';
+		$form_state['values']['status'] = 1;
+		$form_state['values']['id'] = FB_KEY;
+		$form_state['values']['apikey'] = FB_KEY;
+		$form_state['values']['secret'] = FB_SECRET;
+		$form_state['values']['fb_app_data']['fb_app']['set_app_props'] = 1;
+		$form_state['values']['fb_app_data']['fb_connect']['primary'] = 1;
+		$form_state['values']['fb_app_data']['fb_user']['create_account'] = 2;
+		$form_state['values']['fb_app_data']['fb_user']['map_account'][2] = 2;
+		$form_state['values']['fb_app_data']['fb_user']['map_account'][3] = 3;
+		
+		print "Printing form\n";
+		print_r($form_state);
+//		$form_state['values']['op'] = t('Create new account');
+
+//		drupal_form_submit('fb_app_admin_form', $form_state);
+//	this runs but doesn't create an app
+//		$result = drupal_form_submit('fb_app_edit_form', $form_state);
+//	this runs and fails (not a valid callback - probably because the form fails .)
+		$result = drupal_form_submit('fb_app_admin_form', $form_state);
+		print "Printing results\n";
+		print_r($result);
+
+/*
 		db_insert('fb_app')
 			->fields(array(
+				'title' => 'connect',
 				'label' => 'connect',
-				'id' => $fb_key,
-				'apikey' => $fb_key,
-				'secret' => $fb_secret,
+				'id' => FB_KEY,
+				'apikey' => FB_KEY,
+				'secret' => FB_SECRET,
 			))
 		->execute();
+*/
 	}
 	//	need to turn on fb_user
 	//	need permission for email for fb_user

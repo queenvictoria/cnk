@@ -74,6 +74,7 @@ dependencies[] = commerce_devel_generate
 dependencies[] = "votingapi"
 dependencies[] = "fivestar"
 dependencies[] = "addthis"
+dependencies[] = "libraries"
 ; not currently configurable
 ; dependencies[] = "fbconnect"
 dependencies[] = "fb"
