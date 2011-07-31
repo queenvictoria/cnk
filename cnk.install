@@ -3,16 +3,18 @@
 /**
  *	cnk profile install hooks - things to do when install is run
 	
-	looks like the site shortcuts still haven't taken even though the module is now enabled 
-	roles aren't happening either
 
 TO DO
-	shortcuts
+	profile specific shortcuts
 v	GST
 	GST rules
+v	roles
+	permissions
+v	dummy conten
 	locale
 	imagecache presets
-	default currencies
+v	default currencies
+v	ratings
 	
  */
 
