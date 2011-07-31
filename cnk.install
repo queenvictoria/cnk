@@ -3,8 +3,6 @@
 /**
  *	cnk profile install hooks - things to do when install is run
 	
-	looks like the site shortcuts still haven't taken even though the module is now enabled 
-	roles aren't happening either
 
 TO DO
 	profile specific shortcuts
