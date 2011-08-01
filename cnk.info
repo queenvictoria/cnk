@@ -36,7 +36,7 @@ dependencies[] = "help"
 ; dependencies[] = "search"
 dependencies[] = "shortcut"
 dependencies[] = "overlay"
-; dependencies[] = "rdf"
+dependencies[] = "rdf"
 
 
 ; Drupal commerce requirements
@@ -81,6 +81,8 @@ dependencies[] = "fb"
 dependencies[] = "fb_connect"
 dependencies[] = "fb_registration"
 dependencies[] = "fb_user"
+; required to alleviate undefined index: proxied_email in fb_user_get_proxied_email() 
+dependencies[] = "fb_permission"
 
 
 ; CONTRIB
