@@ -66,13 +66,26 @@ function _cnk_install() {
 //	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
 //	shortcut_set_save($set);
 	
+	
 	_cnk_configure_roles();
 	_cnk_configure_currency();
 	_cnk_configure_gst(10);
+	_cnk_configure_stock();
+
 	_cnk_configure_fivestar("product_display");
 	_cnk_configure_facebook();
 	
 	_cnk_dummy_content(10);
+}
+
+
+function _cnk_configure_stock($types=array("product")) {
+	if ( module_exists("commerce_stock") ) {
+		module_load_include("module", "commerce_stock");
+		foreach($types as $type) {
+      		commerce_stock_create_instance('commerce_stock', 'number_integer', TRUE, 'commerce_product', $type, t('Stock'));
+		}
+	}
 }
 
 
@@ -190,7 +203,9 @@ function _cnk_dummy_content($num_products = 10) {
 		'product_types' => array('products'),
 		'title_length' => 2, // @todo: Make this configurable.
 	);
+//	doesn't do gst or stock
 	commerce_devel_generate_products(array('values' => $values));
+	
 */	
 
 	for ( $i = 0; $i < $num_products; $i++ ) {
@@ -222,6 +237,21 @@ function _cnk_dummy_content($num_products = 10) {
 				))
 			))
 		->execute();
+		
+		if ( module_exists("commerce_stock") ) {
+			db_insert('field_data_commerce_stock')
+				->fields(array(
+					'entity_type' => 'commerce_product',
+					'bundle' => 'product',
+					'deleted' => 0,
+					'entity_id' => $i+1,
+					'revision_id' => 1,
+					'language' => 'und',
+					'delta' => 0,
+					'commerce_stock_value' => rand(0, 100)
+				))
+			->execute();
+		}
 		
 		$node = new StdClass();
 		$node->type = 'product_display';
