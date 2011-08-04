@@ -70,7 +70,8 @@ dependencies[] = commerce_paypal_wps
 dependencies[] = commerce_pdm
 dependencies[] = commerce_stock
 dependencies[] = commerce_shipping
-dependencies[] = commerce_delivery
+; delivery causes fatal errors
+; dependencies[] = commerce_delivery
 
 dependencies[] = devel
 dependencies[] = commerce_devel_generate

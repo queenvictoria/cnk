@@ -78,23 +78,19 @@ function _cnk_install() {
 
 function _cnk_configure_facebook() {
 //	need to link in app for anything to work
-	print "_cnk_configure_facebook\n";
+//	print "_cnk_configure_facebook\n";
 	if ( module_exists("fb_app") ) {
 	
 		$result = module_enable(array("fb", "fb_app", "fb_connect", "fb_user", "fb_registration"));
-		if ( $result ) {
-			print "Enabled fb\n";
-		} else {
-			print "Failed to enable fb\n";			
-		}
 //	include drupal_get_path('module', 'fb') . '/fb.admin.inc';
 //		module_load_include('inc', 'fb', 'fb.admin');
 		module_load_include('inc', 'fb_app');
 		module_load_include('inc', 'fb_app', 'fb_app.admin');
-		print "Loaded fb_app\n";
+//		print "Loaded fb_app\n";
+		$app_label = 'connect';
 		
 		$form_state = array();
-		$form_state['values']['label'] = 'connect';
+		$form_state['values']['label'] = $app_label;
 		$form_state['values']['status'] = 1;
 		$form_state['values']['id'] = FB_KEY;
 		$form_state['values']['apikey'] = FB_KEY;
@@ -110,8 +106,8 @@ function _cnk_configure_facebook() {
 		$form_state['values']['fb_app_data']['fb_permission']['map']['user_mobile_phone'] = 'user_mobile_phone';
 		$form_state['values']['op'] = st('Save');
 		
-		print "Printing form\n";
-		print_r($form_state);
+//		print "Printing form\n";
+//		print_r($form_state);
 		$form_state['values']['op'] = t('Create new account');
 
 //		drupal_form_submit('fb_app_admin_form', $form_state);
@@ -122,8 +118,21 @@ function _cnk_configure_facebook() {
 		
 //	what about calling the method directly ?
 		$result = fb_app_admin_form_submit(null, $form_state);
-		print "Printing results\n";
-		print_r($result);
+		variable_set('fb_connect_primary_label', $app_label);
+		
+//	this results in fb_connect remaining unset-so do it again
+//	still doesn't work . must be a typ-oh
+/*
+	$num_updated = db_update('fb_app') // Table name no longer needs {}
+		->fields(array(
+			'data' => serialize($form_state['values']['fb_app_data'])
+		))
+		->condition('fba_id', 1)
+		->execute();
+*/
+	
+//		print "Printing results\n";
+//		print_r($result);
 /*
 		$data = Array (
 			'fb_app' => Array (
@@ -239,7 +248,7 @@ function _cnk_dummy_content($num_products = 10) {
 		}
 		
 		$node_lanugage = $node->language;
-		$product_id = $i;
+		$product_id = $i+1;
 		$node->{$reference_field}[$node_lanugage][] = array('product_id' => $product_id);
 		
 ##		$node->field_data_commerce_product[0]['value'] = $i
@@ -266,6 +275,10 @@ function _cnk_dummy_content($num_products = 10) {
  *	add the storekeeper role
  */
 function _cnk_configure_roles() {
+	//	permissions authenticated users need to view their own orders
+	//	View own orders of any type	
+	user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('view own commerce_order entities'));
+	
 	//	storekeeper role
 	$storeadmin_role = new stdClass();
 	$storeadmin_role->name = 'storekeeper';
