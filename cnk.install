@@ -66,6 +66,7 @@ function _cnk_install() {
 //	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
 //	shortcut_set_save($set);
 	
+	variable_set('site_default_country', 'AU');
 	
 	_cnk_configure_roles();
 	_cnk_configure_currency();
@@ -85,6 +86,27 @@ function _cnk_configure_stock($types=array("product")) {
 		foreach($types as $type) {
       		commerce_stock_create_instance('commerce_stock', 'number_integer', TRUE, 'commerce_product', $type, t('Stock'));
 		}
+	}
+}
+
+
+function _cnk_configure_payments() {
+	if ( module_exists("commerce_paypal_wps") ) {
+		db_insert('rules_config')
+			->fields(array(
+				'name' => 'commerce_payment_paypal_wps',
+				'label' => 'PayPal WPS',
+				'plugin' => 'reaction rule',
+				'active' => 1,
+				'status' => 3,
+				'module' => 'commerce_payment',
+				'data' => serialize(array(
+				//	'components' => array(),
+				//	'include_tax'=>'gst'
+				))
+			))
+		->execute();
+		
 	}
 }
 
@@ -183,8 +205,8 @@ function _cnk_configure_facebook() {
 	
 //	a different module that just handles auth
 	if ( module_exists("fbconnect") ) {
-		variable_set('fbconnect_appid', 240277216003683);
-		variable_set('fbconnect_skey', "f0289a9fa816bc57df40f164f1452f0d");
+		variable_set('fbconnect_appid', FB_KEY);
+		variable_set('fbconnect_skey', FB_SECRET);
 		variable_set('fbconnect_language_code', "en_AU");
 	}
 }
