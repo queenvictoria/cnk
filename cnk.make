@@ -50,7 +50,7 @@ projects[commerce_product_display_manager][version] = "1.x-dev"
 projects[commerce_coupon][subdir] = "contrib"
 projects[commerce_coupon][version] = "1.x-dev"
 projects[commerce_features][subdir] = "contrib"
-projects[commerce_features][version] = "1.x-dev"
+projects[commerce_coupon][version] = "1.x-dev"
 
 projects[devel][subdir] = "developer"
 projects[commerce_devel][subdir] = "developer"

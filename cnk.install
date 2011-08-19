@@ -48,9 +48,6 @@ function cnk_install() {
 		variable_set($v_name, $v_value);
 	}
 
-	print "Running commerce kickstart install"  ;
-//	from the commerce kickstart
-	_commerce_kickstart_install();
 	
 //	our own install
 	include("cnk.settings.inc");
@@ -68,6 +65,10 @@ function _cnk_install() {
 //	$set = shortcut_set_load(st('Store administration'));
 //	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
 //	shortcut_set_save($set);
+
+	print "Running commerce kickstart install"  ;
+//	from the commerce kickstart
+	_commerce_kickstart_install();
 	
 	variable_set('site_default_country', 'AU');
 	
@@ -77,7 +78,7 @@ function _cnk_install() {
 	_cnk_configure_stock();
 
 	_cnk_configure_fivestar("product_display");
-//	_cnk_configure_facebook();
+	_cnk_configure_facebook();
 	
 //	_cnk_configure_payments();
 	
