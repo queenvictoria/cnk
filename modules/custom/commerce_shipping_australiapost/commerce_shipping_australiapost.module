@@ -1,0 +1,19 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Provides an example shipping method for Drupal Commerce for testing and
+ * development.
+ */
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ */
+function commerce_shipping_australiapost_ctools_plugin_directory($owner, $plugin_type) {
+  // Standard ctools hook, used to tell ctools where our commerce shipping
+  // plugins are located.
+  if ($owner == 'commerce_shipping') {
+    return "plugins/$plugin_type";
+  }
+}

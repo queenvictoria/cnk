@@ -34,7 +34,7 @@ define('KICKSTART_ADMIN_THEME', 'seven');
  * Perform actions to set up the site for this profile.
  */
 function cnk_install() {
-	print "Running standard install";
+	print "Running standard install\n";
 //	from the drupal standard profile
 	include_once DRUPAL_ROOT . '/profiles/standard/standard.install';
 	standard_install();
@@ -52,7 +52,7 @@ function cnk_install() {
 //	our own install
 	include("cnk.settings.inc");
 
-	print "Running cnk install"	;
+	print "Running cnk install\n";
 	_cnk_install();
 }
 
@@ -66,7 +66,7 @@ function _cnk_install() {
 //	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
 //	shortcut_set_save($set);
 
-	print "Running commerce kickstart install"  ;
+	print "Running commerce kickstart install\n";
 //	from the commerce kickstart
 	_commerce_kickstart_install();
 	
@@ -303,7 +303,7 @@ function _cnk_dummy_content($num_products = 10) {
 //			$node->{$field_names[0]}['und'][0]['value'] = $i;
 		} else {
 			$reference_field = 'field_product';
-			print "Module commerce_pdm not loaded";
+			print "Module commerce_pdm not loaded\n";
 		}
 		
 		$node_lanugage = $node->language;

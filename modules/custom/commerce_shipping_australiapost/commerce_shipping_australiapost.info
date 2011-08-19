@@ -1,0 +1,10 @@
+; $Id$
+name = Australia Post Shipping Method Example
+description = Provides an example shipping method for testing and development.
+package = Commerce (contrib)
+dependencies[] = commerce
+dependencies[] = commerce_shipping
+core = 7.x
+
+; Base module files
+files[] = commerce_shipping_australiapost.module

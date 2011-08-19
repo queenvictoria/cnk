@@ -30,8 +30,8 @@ projects[rules][version] = "2.x-dev"
 projects[libraries][subdir] = "contrib"
 
 ; http://drupal.org/node/1227018
-; patch against rules short names
-projects[rules][patch][1227018] = http://drupal.org/files/issues/schema-fix-1227018-p0.patch
+; patch against rules short names - committed  August 1, 2011 
+; projects[rules][patch][1227018] = http://drupal.org/files/issues/schema-fix-1227018-p0.patch
 
 projects[views][subdir] = "contrib"
 projects[views][version] = "3.x-dev"
@@ -73,8 +73,8 @@ projects[addthis][version] = "2.1-beta1"
 ; or fb w/ fb_user
 projects[fb][subdir] = "contrib"
 projects[fb][version] = "3.x-dev"
-; permissions fix which should allow fb_user to work without failing
-projects[fb][patch][1173898] = http://drupal.org/files/issues/fb-permission-1173898-D7-no-prefix.patch
+; permissions fix which should allow fb_user to work without failing - rolled into dev by 19/8/2011
+; projects[fb][patch][1173898] = http://drupal.org/files/issues/fb-permission-1173898-D7-no-prefix.patch
 ; user fix array_flip http://drupal.org/node/1064250
 projects[fb][patch][1064250] = http://drupal.org/files/issues/fb_user.module.patch
 
