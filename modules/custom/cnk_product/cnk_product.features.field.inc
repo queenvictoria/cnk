@@ -330,7 +330,7 @@ function cnk_product_field_default_fields() {
           'module' => 'text',
           'settings' => array(),
           'type' => 'text_default',
-          'weight' => 0,
+          'weight' => '0',
         ),
         'teaser' => array(
           'label' => 'hidden',
@@ -405,7 +405,7 @@ function cnk_product_field_default_fields() {
             'show_quantity' => FALSE,
           ),
           'type' => 'commerce_cart_add_to_cart_form',
-          'weight' => 2,
+          'weight' => '2',
         ),
         'full' => array(
           'label' => 'hidden',
@@ -429,7 +429,7 @@ function cnk_product_field_default_fields() {
             'show_quantity' => FALSE,
           ),
           'type' => 'commerce_cart_add_to_cart_form',
-          'weight' => '4',
+          'weight' => '3',
         ),
       ),
       'entity_type' => 'node',
@@ -474,7 +474,7 @@ function cnk_product_field_default_fields() {
       'description' => '',
       'display' => array(
         'default' => array(
-          'label' => 'above',
+          'label' => 'hidden',
           'module' => 'fivestar',
           'settings' => array(
             'expose' => TRUE,
@@ -483,7 +483,7 @@ function cnk_product_field_default_fields() {
             'text' => 'average',
           ),
           'type' => 'fivestar_formatter_default',
-          'weight' => 3,
+          'weight' => '3',
         ),
         'teaser' => array(
           'label' => 'hidden',
@@ -495,7 +495,7 @@ function cnk_product_field_default_fields() {
             'text' => 'none',
           ),
           'type' => 'fivestar_formatter_default',
-          'weight' => '3',
+          'weight' => '4',
         ),
       ),
       'entity_type' => 'node',
@@ -523,7 +523,7 @@ function cnk_product_field_default_fields() {
   $fields['node-product_display-taxonomy_catalog'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '1',
+      'cardinality' => '5',
       'deleted' => '0',
       'entity_types' => array(),
       'field_name' => 'taxonomy_catalog',
@@ -563,7 +563,7 @@ function cnk_product_field_default_fields() {
           'module' => 'taxonomy',
           'settings' => array(),
           'type' => 'taxonomy_term_reference_link',
-          'weight' => 1,
+          'weight' => '1',
         ),
         'teaser' => array(
           'label' => 'above',
@@ -575,14 +575,18 @@ function cnk_product_field_default_fields() {
       'entity_type' => 'node',
       'field_name' => 'taxonomy_catalog',
       'label' => 'Catalog category',
-      'required' => FALSE,
+      'required' => 0,
       'settings' => array(
         'user_register_form' => FALSE,
       ),
       'widget' => array(
-        'module' => 'options',
-        'settings' => array(),
-        'type' => 'options_select',
+        'active' => 0,
+        'module' => 'taxonomy',
+        'settings' => array(
+          'autocomplete_path' => 'taxonomy/autocomplete',
+          'size' => 60,
+        ),
+        'type' => 'taxonomy_autocomplete',
         'weight' => '-3',
       ),
     ),
