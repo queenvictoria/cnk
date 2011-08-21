@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Product feature.
+ */
+
+include_once('cnk_product.features.inc');
