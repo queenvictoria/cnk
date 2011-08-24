@@ -9,3 +9,7 @@ whale:cnk rossetti$ git push origin master
 
 
 $ drush si --sites-subdir=sandbox.local --db-url="mysqli://[dbuser]:[dbpass]@localhost/cnk-sandbox" cnk --site-name="CNK sandbox"
+
+
+post install
+-	add sharethis publisher id

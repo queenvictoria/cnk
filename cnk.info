@@ -86,7 +86,8 @@ dependencies[] = commerce_devel_generate
 ; things to make commerce work socially
 dependencies[] = "votingapi"
 dependencies[] = "fivestar"
-dependencies[] = "addthis"
+; dependencies[] = "addthis"
+dependencies[] = "sharethis"
 dependencies[] = "libraries"
 ; not currently configurable
 ; dependencies[] = "fbconnect"

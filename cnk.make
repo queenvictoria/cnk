@@ -63,8 +63,9 @@ projects[fivestar][version] = "2.x-dev"
 ; permission for anon users to view rating http://drupal.org/node/1247368
 projects[fivestar][patch][1247368] = http://drupal.org/files/issues/fivestar-see-avarage-1247368-5.diff
 
-projects[addthis][subdir] = "contrib"
-projects[addthis][version] = "2.1-beta1"
+; projects[addthis][subdir] = "contrib"
+; projects[addthis][version] = "2.1-beta1"
+projects[sharethis][subdir] = "contrib"
 ; fbconnect
 ; projects[fbconnect][subdir] = "contrib"
 ; projects[fbconnect][version] = "2.x-dev"

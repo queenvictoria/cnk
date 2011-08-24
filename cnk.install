@@ -79,6 +79,7 @@ function _cnk_install() {
 
 	_cnk_configure_fivestar("product_display");
 	_cnk_configure_facebook();
+	_cnk_configure_share();
 	
 //	_cnk_configure_payments();
 	
@@ -118,6 +119,29 @@ function _cnk_configure_payments() {
 }
 
 
+function _cnk_configure_share() {
+	if ( module_exists("sharethis") ) {
+
+		$data = array(
+			'buttons' => 'stbc_hcount',
+			'node_type' => 'product_display',
+			'publisherID' => '',
+			'services' => '"Email:email","Tweet:twitter","Facebook:facebook","Fblike:fblike","Plusone:plusone"',
+			'viewMode' => '1',	//	0 shows in teaser too
+			'widget' => 'st_multi',
+		);
+		
+		foreach ( $data as $key=>$value ) {
+		db_insert('st_table')
+			->fields(array(
+				'st_option' => $key,
+				'st_value' => $value,
+			))
+		->execute();
+	}
+}
+
+
 function _cnk_configure_facebook() {
 //	need to link in app for anything to work
 //	print "_cnk_configure_facebook\n";
@@ -144,6 +168,7 @@ function _cnk_configure_facebook() {
 		$form_state['values']['fb_app_data']['fb_user']['map_account'][2] = 2;
 		$form_state['values']['fb_app_data']['fb_user']['map_account'][3] = 3;
 		$form_state['values']['fb_app_data']['fb_permission']['prompt']['email'] = 'email';
+		$form_state['values']['fb_app_data']['fb_permission']['map']['contact_email'] = 'contact_email';
 		$form_state['values']['fb_app_data']['fb_permission']['map']['user_birthday'] = 'user_birthday';
 		$form_state['values']['fb_app_data']['fb_permission']['map']['user_mobile_phone'] = 'user_mobile_phone';
 		$form_state['values']['op'] = st('Save');
