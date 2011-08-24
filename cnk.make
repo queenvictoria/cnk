@@ -29,6 +29,22 @@ projects[rules][subdir] = "contrib"
 projects[rules][version] = "2.x-dev"
 projects[libraries][subdir] = "contrib"
 
+; laudanum stock
+projects[transliteration][subdir] = "contrib"
+projects[token][subdir] = "contrib"
+projects[pathauto][subdir] = "contrib"
+projects[globalredirect][subdir] = "contrib"
+projects[xmlsitemap][subdir] = "contrib"
+projects[google_analytics][subdir] = "contrib"
+projects[wysiwyg][subdir] = "contrib"
+libraries[ckeditor][download][type] = "get"
+libraries[ckeditor][download][url] = "http://download.cksource.com/CKEditor/CKEditor/CKEditor%203.4.2/ckeditor_3.4.2.tar.gz"
+projects[features][subdir] = "contrib"
+; patch features to handle shortcut sets http://drupal.org/node/986968
+projects[features][patch][986968] = http://drupal.org/files/issues/features.shortcut_sets_0.patch
+
+
+
 ; http://drupal.org/node/1227018
 ; patch against rules short names - committed  August 1, 2011 
 ; projects[rules][patch][1227018] = http://drupal.org/files/issues/schema-fix-1227018-p0.patch
