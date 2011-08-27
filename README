@@ -13,3 +13,13 @@ $ drush si --sites-subdir=sandbox.local --db-url="mysqli://[dbuser]:[dbpass]@loc
 
 post install
 -	add sharethis publisher id
+
+
+configure git to use certs
+whale:tmp rossetti$ wget --no-check-certificate https://www.digicert.com/testroot/DigiCertHighAssuranceEVRootCA.crt
+whale:tmp rossetti$ sudo chmod 666 /opt/local/share/curl/curl-ca-bundle.crt
+whale:tmp rossetti$ cat DigiCertHighAssuranceEVRootCA.crt  >> /opt/local/share/curl/curl-ca-bundle.crt
+whale:tmp rossetti$ sudo chmod 644 /opt/local/share/curl/curl-ca-bundle.crt
+whale:tmp rossetti$ git config --global http.sslcainfo /opt/local/share/curl/curl-ca-bundle.crt
+whale:tmp rossetti$ git config --global http.sslcainfo
+/opt/local/share/curl/curl-ca-bundle.crt
