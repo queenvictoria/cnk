@@ -77,7 +77,9 @@ projects[votingapi][subdir] = "contrib"
 projects[fivestar][subdir] = "contrib"
 projects[fivestar][version] = "2.x-dev"
 ; permission for anon users to view rating http://drupal.org/node/1247368
-projects[fivestar][patch][1247368] = http://drupal.org/files/issues/fivestar-see-avarage-1247368-5.diff
+; projects[fivestar][patch][1247368] = http://drupal.org/files/issues/fivestar-see-avarage-1247368-5.diff
+; updated 
+projects[fivestar][patch][1247368-8] = https://github.com/queenvictoria/cnk/blob/master/patches/fivestar-see-average-1247368-8.patch
 
 ; projects[addthis][subdir] = "contrib"
 ; projects[addthis][version] = "2.1-beta1"
