@@ -1,0 +1,22 @@
+diff --git a/includes/fivestar.field.inc b/includes/fivestar.field.inc
+index 58b19e5..d182891 100644
+--- a/includes/fivestar.field.inc
++++ b/includes/fivestar.field.inc
+@@ -373,6 +373,17 @@ function fivestar_field_formatter_settings_form($field, $instance, $view_mode, $
+     ),
+   );
+ 
++  if ($instance['widget']['type'] == 'exposed') {
++    $tag = (isset($field['settings']['axis'])) ? $field['settings']['axis'] : 'vote';
++    list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
++    $votes = fivestar_get_votes($entity_type, $id, $tag);
++    $element[0]['#item'] = array(
++      0 => array(
++        'rating' => $values['average'] = isset($votes['average']['value']) ? $votes['average']['value'] : 0,
++      ),
++    );
++  }
++
+   return $element;
+ }
+ 
