@@ -79,7 +79,7 @@ function _cnk_install() {
 
 	_cnk_configure_fivestar("product_display");
 	_cnk_configure_facebook();
-	_cnk_configure_share();
+//	_cnk_configure_share();
 	
 //	_cnk_configure_payments();
 	
@@ -132,12 +132,13 @@ function _cnk_configure_share() {
 		);
 		
 		foreach ( $data as $key=>$value ) {
-		db_insert('st_table')
-			->fields(array(
-				'st_option' => $key,
-				'st_value' => $value,
-			))
-		->execute();
+			db_insert('st_table')
+				->fields(array(
+					'st_option' => $key,
+					'st_value' => $value,
+				))
+			->execute();
+		}
 	}
 }
 
