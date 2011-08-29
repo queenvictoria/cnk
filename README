@@ -23,3 +23,10 @@ whale:tmp rossetti$ sudo chmod 644 /opt/local/share/curl/curl-ca-bundle.crt
 whale:tmp rossetti$ git config --global http.sslcainfo /opt/local/share/curl/curl-ca-bundle.crt
 whale:tmp rossetti$ git config --global http.sslcainfo
 /opt/local/share/curl/curl-ca-bundle.crt
+
+ca_directory=/System/Library/OpenSSL/certs
+
+whale:cnk rossetti$ sudo su
+Password:
+sh-3.2#  echo "ca_directory=/System/Library/OpenSSL/certs" >> /opt/local/etc/wgetrc
+sh-3.2# 

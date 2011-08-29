@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Carousel feature.
+ */
+
+include_once('cnk_carousel.features.inc');

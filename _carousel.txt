@@ -1,0 +1,29 @@
+	
+	create slide content type	
+		add image field ( can we use media ? )
+		add url field ( can we use link ? )
+
+		create a block	
+			type is jcarousel	
+			skin is mango ( default doesn't work )
+			add url field first 
+				hidden
+			add image field	
+				rewrite
+				output as link
+				link to [token] url
+			add title/body
+				rewrite
+				output as link
+				link to [token] url
+
+
+	questions 
+		what happens if we use multiple images per slide ?
+		can we use media ?
+		can we use link ?
+		can use use node reference to create links to particular pages ?
+		
+	
+	
+	feature blocks ( not carousels )
