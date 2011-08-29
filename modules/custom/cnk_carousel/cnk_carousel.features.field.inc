@@ -86,7 +86,7 @@ function cnk_carousel_field_default_fields() {
   $fields['node-slide-field_image'] = array(
     'field_config' => array(
       'active' => '1',
-      'cardinality' => '1',
+      'cardinality' => '5',
       'deleted' => '0',
       'entity_types' => array(),
       'field_name' => 'field_image',
@@ -160,46 +160,46 @@ function cnk_carousel_field_default_fields() {
     ),
   );
 
-  // Exported field: 'node-slide-field_link'
-  $fields['node-slide-field_link'] = array(
+  // Exported field: 'node-slide-field_url'
+  $fields['node-slide-field_url'] = array(
     'field_config' => array(
       'active' => '1',
       'cardinality' => '1',
       'deleted' => '0',
       'entity_types' => array(),
-      'field_name' => 'field_link',
-      'foreign keys' => array(
-        'format' => array(
-          'columns' => array(
-            'format' => 'format',
-          ),
-          'table' => 'filter_format',
-        ),
-      ),
-      'indexes' => array(
-        'format' => array(
-          0 => 'format',
-        ),
-      ),
-      'module' => 'text',
+      'field_name' => 'field_url',
+      'foreign keys' => array(),
+      'indexes' => array(),
+      'module' => 'link',
       'settings' => array(
-        'max_length' => '255',
+        'attributes' => array(
+          'class' => '',
+          'rel' => '',
+          'target' => 'default',
+        ),
+        'display' => array(
+          'url_cutoff' => 80,
+        ),
+        'enable_tokens' => 1,
+        'title' => 'optional',
+        'title_value' => '',
+        'url' => 0,
       ),
       'translatable' => '0',
-      'type' => 'text',
+      'type' => 'link_field',
     ),
     'field_instance' => array(
       'bundle' => 'slide',
       'default_value' => NULL,
       'deleted' => '0',
-      'description' => '',
+      'description' => 'To where should this slide link?',
       'display' => array(
         'default' => array(
           'label' => 'above',
-          'module' => 'text',
+          'module' => 'link',
           'settings' => array(),
-          'type' => 'text_default',
-          'weight' => 2,
+          'type' => 'default',
+          'weight' => 3,
         ),
         'teaser' => array(
           'label' => 'above',
@@ -209,21 +209,30 @@ function cnk_carousel_field_default_fields() {
         ),
       ),
       'entity_type' => 'node',
-      'field_name' => 'field_link',
+      'field_name' => 'field_url',
       'label' => 'Link',
       'required' => 0,
       'settings' => array(
-        'text_processing' => '0',
+        'attributes' => array(
+          'class' => '',
+          'rel' => '',
+          'target' => 'default',
+        ),
+        'display' => array(
+          'url_cutoff' => '80',
+        ),
+        'enable_tokens' => 1,
+        'title' => 'none',
+        'title_value' => '',
+        'url' => 0,
         'user_register_form' => FALSE,
       ),
       'widget' => array(
-        'active' => 1,
-        'module' => 'text',
-        'settings' => array(
-          'size' => '60',
-        ),
-        'type' => 'text_textfield',
-        'weight' => '34',
+        'active' => 0,
+        'module' => 'link',
+        'settings' => array(),
+        'type' => 'link_field',
+        'weight' => '35',
       ),
     ),
   );
@@ -233,6 +242,7 @@ function cnk_carousel_field_default_fields() {
   t('Body');
   t('Image');
   t('Link');
+  t('To where should this slide link?');
 
   return $fields;
 }

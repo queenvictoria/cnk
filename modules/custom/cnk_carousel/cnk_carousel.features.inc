@@ -22,9 +22,9 @@ function cnk_carousel_node_info() {
     'slide' => array(
       'name' => t('Slide'),
       'base' => 'node_content',
-      'description' => '',
+      'description' => t('Create slides to add to carousels.'),
       'has_title' => '1',
-      'title_label' => t('Title'),
+      'title_label' => t('Heading'),
       'help' => '',
     ),
   );
