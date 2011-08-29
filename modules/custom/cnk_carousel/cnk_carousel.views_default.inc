@@ -90,7 +90,7 @@ function cnk_carousel_views_default_views() {
   $handler->display->display_options['fields']['field_image']['hide_alter_empty'] = 0;
   $handler->display->display_options['fields']['field_image']['click_sort_column'] = 'fid';
   $handler->display->display_options['fields']['field_image']['settings'] = array(
-    'image_style' => '',
+    'image_style' => 'cnk_carousel',
     'image_link' => '',
   );
   $handler->display->display_options['fields']['field_image']['group_rows'] = 1;
