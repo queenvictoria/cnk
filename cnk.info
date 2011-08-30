@@ -99,6 +99,7 @@ dependencies[] = "fb_user"
 dependencies[] = "fb_permission"
 
 ; cnk specific stuff
+dependencies[] = "link"
 dependencies[] = "cnk_carousel"
 
 ; CONTRIB
