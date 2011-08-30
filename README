@@ -28,5 +28,7 @@ ca_directory=/System/Library/OpenSSL/certs
 
 whale:cnk rossetti$ sudo su
 Password:
-sh-3.2#  echo "ca_directory=/System/Library/OpenSSL/certs" >> /opt/local/etc/wgetrc
-sh-3.2# 
+sh-3.2# echo "ca_directory=/System/Library/OpenSSL/certs" >> /opt/local/etc/wgetrc
+sh-3.2# echo "" | openssl s_client -showcerts -connect raw.github.com:443
+# save each cert into files in /System/Library/OpenSSL/certs/ ending with .pem
+sh-3.2# sudo c_rehash /System/Library/OpenSSL/certs/
