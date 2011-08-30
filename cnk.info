@@ -98,6 +98,8 @@ dependencies[] = "fb_user"
 ; required to alleviate undefined index: proxied_email in fb_user_get_proxied_email() 
 dependencies[] = "fb_permission"
 
+; cnk specific stuff
+dependencies[] = "cnk_carousel"
 
 ; CONTRIB
 dependencies[] = "transliteration"
