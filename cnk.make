@@ -43,7 +43,8 @@ projects[features][subdir] = "contrib"
 ; patch features to handle shortcut sets http://drupal.org/node/986968
 projects[features][patch][986968] = http://drupal.org/files/issues/features.shortcut_sets_0.patch
 
-
+; dependencies for cnk features
+projects[link][subdir] = "contrib"
 
 ; http://drupal.org/node/1227018
 ; patch against rules short names - committed  August 1, 2011 
