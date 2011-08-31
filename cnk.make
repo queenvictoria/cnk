@@ -21,8 +21,9 @@ includes[] = https://raw.github.com/petercossey/merch/master/merch.make
 
 projects[addressfield][subdir] = "contrib"
 projects[addressfield][version] = "1.x-dev"
-projects[ctools][subdir] = "contrib"
-projects[ctools][version] = "1.x-dev"
+; ctools is in buildkit
+; projects[ctools][subdir] = "contrib"
+; projects[ctools][version] = "1.x-dev"
 projects[entity][subdir] = "contrib"
 projects[entity][version] = "1.x-dev"
 projects[rules][subdir] = "contrib"
@@ -50,8 +51,9 @@ projects[link][subdir] = "contrib"
 ; patch against rules short names - committed  August 1, 2011 
 ; projects[rules][patch][1227018] = http://drupal.org/files/issues/schema-fix-1227018-p0.patch
 
-projects[views][subdir] = "contrib"
-projects[views][version] = "3.x-dev"
+; views is in build kit
+; projects[views][subdir] = "contrib"
+; projects[views][version] = "3.x-dev"
 projects[commerce][subdir] = "contrib"
 projects[commerce][version] = "1.x-dev"
 projects[commerce_paypal][subdir] = "contrib"
@@ -69,7 +71,8 @@ projects[commerce_coupon][version] = "1.x-dev"
 projects[commerce_features][subdir] = "contrib"
 projects[commerce_coupon][version] = "1.x-dev"
 
-projects[devel][subdir] = "developer"
+; devel is in buildkit
+; projects[devel][subdir] = "developer"
 projects[commerce_devel][subdir] = "developer"
 projects[commerce_devel][version] = "1.x-dev"
 
