@@ -68,6 +68,7 @@ dependencies[] = commerce_payment
 dependencies[] = commerce_payment_ui
 
 ; commerce contrib
+dependencies[] = commerce_eway
 dependencies[] = commerce_paypal
 dependencies[] = commerce_paypal_wps
 dependencies[] = commerce_pdm

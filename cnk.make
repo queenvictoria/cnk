@@ -9,11 +9,11 @@
 ; Build Kit taking over
 ; ---------------------
 ; Include Build Kit install profile makefile via URL
-includes[] = http://drupalcode.org/project/buildkit.git/blob_plain/refs/heads/7.x-2.x:/drupal-org.make
+; includes[] = http://drupalcode.org/project/buildkit.git/blob_plain/refs/heads/7.x-2.x:/drupal-org.make
 
 ; bring in other stuff from cossey's merch profile
 ; ------------------------------------------------
-includes[] = https://raw.github.com/petercossey/merch/master/merch.make
+; includes[] = https://raw.github.com/petercossey/merch/master/merch.make
 
 ; Contrib
 ; -------
@@ -21,9 +21,8 @@ includes[] = https://raw.github.com/petercossey/merch/master/merch.make
 
 projects[addressfield][subdir] = "contrib"
 projects[addressfield][version] = "1.x-dev"
-; ctools is in buildkit
-; projects[ctools][subdir] = "contrib"
-; projects[ctools][version] = "1.x-dev"
+projects[ctools][subdir] = "contrib"
+projects[ctools][version] = "1.x-dev"
 projects[entity][subdir] = "contrib"
 projects[entity][version] = "1.x-dev"
 projects[rules][subdir] = "contrib"
@@ -31,6 +30,7 @@ projects[rules][version] = "2.x-dev"
 projects[libraries][subdir] = "contrib"
 
 ; laudanum stock
+projects[admin][subdir] = "contrib"
 projects[transliteration][subdir] = "contrib"
 projects[token][subdir] = "contrib"
 projects[pathauto][subdir] = "contrib"
@@ -51,11 +51,12 @@ projects[link][subdir] = "contrib"
 ; patch against rules short names - committed  August 1, 2011 
 ; projects[rules][patch][1227018] = http://drupal.org/files/issues/schema-fix-1227018-p0.patch
 
-; views is in build kit
-; projects[views][subdir] = "contrib"
-; projects[views][version] = "3.x-dev"
+projects[views][subdir] = "contrib"
+projects[views][version] = "3.x-dev"
 projects[commerce][subdir] = "contrib"
 projects[commerce][version] = "1.x-dev"
+projects[commerce_eway][subdir] = "contrib"
+projects[commerce_eway][version] = "1.x-dev"
 projects[commerce_paypal][subdir] = "contrib"
 projects[commerce_paypal][version] = "1.x-dev"
 projects[commerce_stock][subdir] = "contrib"
@@ -71,8 +72,7 @@ projects[commerce_coupon][version] = "1.x-dev"
 projects[commerce_features][subdir] = "contrib"
 projects[commerce_coupon][version] = "1.x-dev"
 
-; devel is in buildkit
-; projects[devel][subdir] = "developer"
+projects[devel][subdir] = "developer"
 projects[commerce_devel][subdir] = "developer"
 projects[commerce_devel][version] = "1.x-dev"
 
@@ -113,3 +113,6 @@ libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk
 libraries[facebook-php-sdk][download][tag] = v2.1.2
 libraries[facebook-php-sdk][destination] = "libraries"   
 
+; themes
+projects[tao][version] = 3.0-beta3
+projects[rubik][version] = 4.0-beta6
