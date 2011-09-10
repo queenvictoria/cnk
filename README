@@ -13,7 +13,7 @@ $ drush si --sites-subdir=sandbox.local --db-url="mysqli://[dbuser]:[dbpass]@loc
 
 post install
 -	add sharethis publisher id
--	enable australian shipping rules
+-	enable australian shipping rules module
 
 configure git to use certs
 whale:tmp rossetti$ wget --no-check-certificate https://www.digicert.com/testroot/DigiCertHighAssuranceEVRootCA.crt

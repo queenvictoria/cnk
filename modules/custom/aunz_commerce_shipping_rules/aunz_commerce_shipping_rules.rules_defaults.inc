@@ -12,6 +12,7 @@ function aunz_commerce_shipping_rules_default_rules_configuration() {
   $items['rules_flat_rate_au'] = entity_import('rules_config', '{ "rules_flat_rate_au" : {
       "LABEL" : "Flat rate to Australia",
       "PLUGIN" : "reaction rule",
+      "ACTIVE" : false,
       "WEIGHT" : "3",
       "REQUIRES" : [ "commerce_order", "commerce_shipping" ],
       "ON" : [ "commerce_shipping_methods" ],
@@ -160,6 +161,8 @@ function aunz_commerce_shipping_rules_default_rules_configuration() {
   $items['rules_free_shipping_nz'] = entity_import('rules_config', '{ "rules_free_shipping_nz" : {
       "LABEL" : "Free shipping within New Zealand",
       "PLUGIN" : "reaction rule",
+      "ACTIVE" : false,
+      "WEIGHT" : "1",
       "REQUIRES" : [ "commerce_order", "commerce_shipping" ],
       "ON" : [ "commerce_shipping_methods" ],
       "IF" : [
