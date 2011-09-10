@@ -1,6 +1,7 @@
 core = "7.x"
 dependencies[] = "commerce_order"
 dependencies[] = "commerce_shipping"
+dependencies[] = "commerce_shipping_flat_rate"
 description = "Includes shipping rules for Australian sites"
 features[rules_config][] = "rules_flat_rate_nz"
 features[rules_config][] = "rules_flat_rate_au"
