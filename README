@@ -13,7 +13,7 @@ $ drush si --sites-subdir=sandbox.local --db-url="mysqli://[dbuser]:[dbpass]@loc
 
 post install
 -	add sharethis publisher id
--	move shipping pane to review stage (after shipping details have been recorded)
+-	move shipping pane to review stage (after shipping details have been recorded) admin/commerce/config/checkout
 -	enable social commerce generate module ( to generate dummy content )
 -	enable token and testing in eway admin/commerce/config/payment-methods/manage/commerce_payment_commerce_payment_eway/edit/3
 

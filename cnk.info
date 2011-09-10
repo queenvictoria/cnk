@@ -76,6 +76,7 @@ dependencies[] = commerce_stock
 dependencies[] = commerce_shipping
 dependencies[] = commerce_shipping_ui
 dependencies[] = commerce_shipping_flat_rate
+dependencies[] = commerce_addressbook
 dependencies[] = commerce_coupon
 dependencies[] = commerce_coupon_ui
 dependencies[] = commerce_coupon_basic
