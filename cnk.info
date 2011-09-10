@@ -103,6 +103,8 @@ dependencies[] = "fb_permission"
 ; cnk specific stuff
 dependencies[] = "link"
 dependencies[] = "cnk_carousel"
+dependencies[] = "cnk_product"
+;dependencies[] = "social_commerce_generate"
 dependencies[] = "aunz_commerce_shipping_rules"
 
 ; CONTRIB

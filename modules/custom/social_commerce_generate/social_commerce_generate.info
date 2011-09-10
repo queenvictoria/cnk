@@ -1,0 +1,9 @@
+core = "7.x"
+dependencies[] = "cnk_product"
+dependencies[] = "commerce_stock"
+
+description = "Product node and entity"
+name = "Social commerce dummy products"
+package = "Features"
+project = "social_commerce_generate"
+version = "7.x-0.1"

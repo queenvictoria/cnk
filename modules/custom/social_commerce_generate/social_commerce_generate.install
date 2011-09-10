@@ -1,0 +1,114 @@
+<?php
+
+function social_commerce_generate_install() {
+	_social_commerce_dummy_content();
+}
+
+
+function _social_commerce_dummy_content($num_products = 10) {
+/*
+//	taken from commerce_devel_generate.drush.inc
+	module_load_include('inc', 'commerce_devel_generate', 'devel_generate');
+	$values = array(
+		'kill_products' => 0,
+		'num_products' => $num_products,
+		'product_types' => array('products'),
+		'title_length' => 2, // @todo: Make this configurable.
+	);
+//	doesn't do gst or stock
+	commerce_devel_generate_products(array('values' => $values));
+	
+*/	
+
+	for ( $i = 0; $i < $num_products; $i++ ) {
+		db_insert('commerce_product')
+			->fields(array(
+				'sku' => 'test-' . $i,
+				'type' => 'product',
+				'title' => 'Test ' . $i,
+				'language' => 'und',
+				'status' => 1,
+				'uid' => $i
+			))
+		->execute();
+	
+		db_insert('field_data_commerce_price')
+			->fields(array(
+				'entity_type' => 'commerce_product',
+				'bundle' => 'product',
+				'deleted' => 0,
+				'entity_id' => $i+1,
+				'revision_id' => 1,
+				'language' => 'und',
+				'delta' => 0,
+				'commerce_price_amount' => 1100 * ($i+1),
+				'commerce_price_currency_code' => 'AUD',
+				'commerce_price_data' => serialize(array(
+					'components' => array(),
+					'include_tax'=>'gst'
+				))
+			))
+		->execute();
+		
+		if ( module_exists("commerce_stock") ) {
+			$result = module_enable(array("commerce_stock"));
+			db_insert('field_data_commerce_stock')
+				->fields(array(
+					'entity_type' => 'commerce_product',
+					'bundle' => 'product',
+					'deleted' => 0,
+					'entity_id' => $i+1,
+					'revision_id' => 1,
+					'language' => 'und',
+					'delta' => 0,
+					'commerce_stock_value' => rand(0, 100)
+				))
+			->execute();
+		}
+		
+		$node = new StdClass();
+		$node->type = 'product_display';
+		node_object_prepare($node);
+//		print_r($node);
+		$node->title = 'Test ' . $i;
+		$node->status = 1;
+		$node->promote = 1;
+		$node->uid = 1;
+		$node->body = "Body Body body";
+		$node->language = LANGUAGE_NONE;
+#		$node->language = "und";
+		
+		module_load_include('inc', 'commerce_pdm', 'commerce_pdm');
+		if ( function_exists('_commerce_pdm_get_product_reference_fields') ) {
+			$field_names = _commerce_pdm_get_product_reference_fields($node);
+			$reference_field = $field_names[0];
+//	doesnt work, causes errors.
+//	Warning: array_flip() [function.array-flip]: Can only flip STRING and INTEGER values! in DrupalDefaultEntityController->load() (line 177 of /Users/rossetti/Documents/jobs/laudanum/cashmereandkaye/public_html/drupal-commerce/includes/entity.inc).
+//			$node->{$field_names[0]}['und'][0]['value'] = $i;
+		} else {
+			$reference_field = 'field_product';
+			print "Module commerce_pdm not loaded\n";
+		}
+		
+		$node_lanugage = $node->language;
+		$product_id = $i+1;
+		$node->{$reference_field}[$node_lanugage][] = array('product_id' => $product_id);
+		
+##		$node->field_data_commerce_product[0]['value'] = $i
+#		$key = 'data_commerce_product';
+//		$node->{'field_'.$key}[$node->language][0]['value'] = $value;
+		node_save($node);
+/*
+		db_insert('node')
+			->fields(array(
+				'type' => 'product_display',
+				'title' => 'Test ' . $i,
+				'uid' => 1,
+				'language' => 'und',
+				'promote' => 1,
+				'status' => 1
+			))
+		->execute();
+*/	
+	}
+}

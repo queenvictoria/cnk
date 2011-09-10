@@ -77,13 +77,13 @@ function _cnk_install() {
 	_cnk_configure_gst(10);
 	_cnk_configure_stock();
 
-	_cnk_configure_fivestar("product_display");
+//	_cnk_configure_fivestar("product_display");
 	_cnk_configure_facebook();
 //	_cnk_configure_share();
 	
 //	_cnk_configure_payments();
 	
-	_cnk_dummy_content(10);
+//	_cnk_dummy_content(10);
 }
 
 
@@ -490,7 +490,34 @@ function _commerce_kickstart_install() {
   }
   $query->execute();
 
-  // Insert a product display node type into the database.
+//	_commerce_kickstart_create_product();
+	
+  // Give checkout access to anonymous and authenticated users.
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access checkout'));
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access checkout'));
+
+  // Disable Views' Advanced Help module nag message until it's production ready.
+  variable_set('views_hide_help_message', TRUE);
+
+  // Add a shortcut set for store administration.
+  $set = new stdClass;
+  $set->title = st('Store administration');
+  $set->links = array(
+    array('link_path' => 'admin/commerce/products/add', 'link_title' => st('Add product')),
+    array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display')),
+    array('link_path' => 'admin/commerce/products', 'link_title' => st('View products')),
+    array('link_path' => 'admin/commerce/orders', 'link_title' => st('View orders')),
+    array('link_path' => 'admin/commerce/config', 'link_title' => st('Configure store')),
+  );
+  shortcut_set_save($set);
+
+  // Apply the shortcut set to the first user.
+  shortcut_set_assign_user($set, (object) array('uid' => 1));
+}
+
+
+function _commerce_kickstart_create_product() {
+	 // Insert a product display node type into the database.
   $types = array(
     array(
       'type' => 'product_display',
@@ -656,26 +683,5 @@ function _commerce_kickstart_install() {
     ),
   );
   field_create_instance($instance);
-
-  // Give checkout access to anonymous and authenticated users.
-  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access checkout'));
-  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access checkout'));
-
-  // Disable Views' Advanced Help module nag message until it's production ready.
-  variable_set('views_hide_help_message', TRUE);
-
-  // Add a shortcut set for store administration.
-  $set = new stdClass;
-  $set->title = st('Store administration');
-  $set->links = array(
-    array('link_path' => 'admin/commerce/products/add', 'link_title' => st('Add product')),
-    array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display')),
-    array('link_path' => 'admin/commerce/products', 'link_title' => st('View products')),
-    array('link_path' => 'admin/commerce/orders', 'link_title' => st('View orders')),
-    array('link_path' => 'admin/commerce/config', 'link_title' => st('Configure store')),
-  );
-  shortcut_set_save($set);
-
-  // Apply the shortcut set to the first user.
-  shortcut_set_assign_user($set, (object) array('uid' => 1));
 }
+

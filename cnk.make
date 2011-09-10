@@ -60,6 +60,11 @@ projects[commerce][subdir] = "contrib"
 projects[commerce][version] = "1.x-dev"
 projects[commerce_eway][subdir] = "contrib"
 projects[commerce_eway][version] = "1.x-dev"
+; library to support commerce_eway
+libraries[nusoap][download][type] = "get"
+libraries[nusoap][download][url] = "http://downloads.sourceforge.net/project/nusoap/nusoap/0.9.5/nusoap-0.9.5.zip"
+libraries[nusoap][destination] = "libraries"   
+
 projects[commerce_paypal][subdir] = "contrib"
 projects[commerce_paypal][version] = "1.x-dev"
 projects[commerce_stock][subdir] = "contrib"
