@@ -39,3 +39,27 @@ sh-3.2# echo "ca_directory=/System/Library/OpenSSL/certs" >> /opt/local/etc/wget
 sh-3.2# echo "" | openssl s_client -showcerts -connect raw.github.com:443
 # save each cert into files in /System/Library/OpenSSL/certs/ ending with .pem
 sh-3.2# sudo c_rehash /System/Library/OpenSSL/certs/
+
+
+working on commerce_eway
+git clone --branch 7.x-1.x-dev http://git.drupal.org/project/commerce_eway.git commerce_eway
+
+http://www.eway.com.au/Developer/eway-api/token-payments.aspx
+The test gateway URL is https://www.eway.com.au/gateway/ManagedPaymentService/test/managedCreditCardPayment.asmx
+The test username is test@eway.com.au - this is the only username that will work on the test gateway.
+The test password is test123 - this is the only password that will work on the test gateway.
+The test ManagedCustomerID is 9876543211000 - this is the only managed customer ID that will work on the test gateway.
+The test CustomerReference is Test 123 - this is the only customer reference that will work on the test gateway.
+
+CreateCustomer
+UpdateCustomer
+QueryCustomer
+ProcessPayment
+ProcessPaymentWithCVN
+QueryPayment
+
+-	create a credit card details tab for tokenised customers (querycustomer)
+-	allow update of "credit card on file" (updatecustomer)
+-	add partial credit card details to checkout for tokenised customers (querycustomer)
+
+

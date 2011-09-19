@@ -1,0 +1,11 @@
+name = Express Checkout
+description = Creates an AJAX enabled single page checkout
+package = Commerce (contrib)
+core = 7.x
+
+dependencies[] = commerce
+dependencies[] = commerce_checkout
+dependencies[] = commerce_payment
+
+version = "7.x-1.x-dev"
+

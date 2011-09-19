@@ -1,0 +1,123 @@
+<?php
+/*
+	review panes commerce_checkout_review_pane_checkout_form()
+
+*/
+
+
+/* 
+	Instance of hook_menu
+	Creates our path for the one page checkout
+	@todo can we override the default?
+*/
+function commerce_expresscheckout_menu() {
+	$items = array(); 
+//	$items['checkout/%/express'] = array( 
+	$items['checkout/%'] = array( 
+//	$items['expresscheckout/%'] = array( 
+      'title' => 'Express checkout', 
+      'weight' => 20,
+      'description' => t('Checkout quickly on one page.'), 
+      'page callback' => 'drupal_get_form', 
+//		inherited from checkout if path is checkout/%/express
+//      'access' => user_access('access checkout'),
+    'access arguments' => array('access checkout'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'page arguments' => array('commerce_expresscheckout_form', 1),
+	);
+  
+	return $items;
+
+}
+
+
+/*
+	Implements hook_form
+	Creates a form for our checkout
+*/
+function commerce_expresscheckout_form($form, &$form_state, $order_id) {
+//	if we commerce_order load then we redirect away.
+	$order = commerce_order_load($order_id);
+//	krumo($order);
+//	$order = $order_id;
+//	$order = null;
+	$panes = commerce_checkout_panes(array('enabled' => TRUE));
+	$pages = commerce_checkout_pages();
+
+	foreach ($pages as $page_id => $checkout_page) {
+//	fieldsets
+		print "<h1>$page_id</h1>";
+		$form[$page_id . '_fieldset'] = array(
+			'#title' => t($checkout_page['title']),
+			// The prefix/suffix provide the div that we're replacing, named by
+			// #ajax['wrapper'] above.
+			'#prefix' => '<div id="' . $page_id . '_div">',
+			'#suffix' => '</div>',
+			'#type' => 'fieldset',
+			'#description' => t($checkout_page['help']),
+		);
+
+		foreach ($panes as $pane_id => $checkout_pane_local) {
+//			krumo($checkout_pane_local);
+//	the redirect panes cause redirection - we can't have that
+			if ( strpos($pane_id, 'redirect') )
+				continue;
+			if ( $checkout_pane_local['page'] == $page_id ) {
+				print "<h2>$pane_id</h2>";
+//				krumo($checkout_pane_local['callbacks']);
+				$callback = commerce_checkout_pane_callback($checkout_pane_local, 'checkout_form');
+				print "<h3>$callback </h3>";
+        		$pane_data = $callback($form, $form_state, $checkout_pane_local, $order);
+//	from commerce_checkout.checkout_pane.inc
+//	Only display the pane if there is data in the pane.
+				if (!empty($pane_data)) {
+				// Add a row for it in the review data.
+					krumo($pane_data);
+					$form[$page_id . '_fieldset'][$page_id . '_' . $pane_id . '_fieldset'] = array(
+						'#title' => t($checkout_pane_local['title']),
+						'data' => $pane_data,
+						'#prefix' => '<div id="' . $pane_id . '_div">',
+						'#suffix' => '</div>',
+						'#type' => 'fieldset',
+						'#collapsed' => TRUE,
+						'#collapsible' => TRUE,
+						//'#description' => t($checkout_pane_local['help']),
+					);
+//	loop through the elements looking for ones that will trigger an ajax refresh
+				}
+			}
+		}
+	}
+
+
+	
+	
+	
+	$form['submit'] = array(
+    	'#type' => 'submit',
+    	'#value' => t('Submit'),
+		'#form_id' => "commerce_expresscheckout_form",
+	);
+	return $form;
+}
+
+
+/*
+	Implements hook_form_validate
+*/
+function commerce_expresscheckout_form_validate() {
+	
+}
+
+
+/*
+	Implements hook_form_submit
+*/
+function commerce_expresscheckout_form_submit() {
+	
+}
+
+/*
+	Settings
+	- Override default checkout or not
+*/
