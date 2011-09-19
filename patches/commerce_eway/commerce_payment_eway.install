@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * The installation file for the commerce_payment_eway module
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function commerce_payment_eway_requirements($phase) {
+  $t = get_t();
+
+  // Make sure we have curl.
+  $has_curl = function_exists('curl_init');
+  $requirements['curl'] = array(
+    'title' => $t('cURL'),
+    'value' => $has_curl ? $t('Enabled') : $t('Not found'),
+  );
+  if (!$has_curl) {
+    $requirements['curl']['severity'] = REQUIREMENT_ERROR;
+    $requirements['curl']['description'] = $t("Eway requires the PHP <a href='!curl_url'>cURL</a> library.", array('!curl_url' => 'http://php.net/manual/en/curl.setup.php'));
+  }
+
+  // Make sure we have simplexml.
+  $has_simplexml = function_exists('simplexml_load_string');
+  $requirements['simplexml'] = array(
+    'title' => $t('SimpleXML'),
+    'value' => $has_simplexml ? $t('Enabled') : $t('Not found'),
+  );
+  if (!$has_simplexml) {
+    $requirements['simplexml']['severity'] = REQUIREMENT_ERROR;
+    $requirements['simplexml']['description'] = $t("Eway requires the SimpleXML library.");
+  }
+
+  return $requirements;
+}
+
+function commerce_payment_eway_schema() {
+  $schema = array();
+
+  $schema['commerce_eway_token'] = array(
+    'description' => 'Store customer tokens.',
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'The {user}.uid.',
+      ),
+      'eway_id' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'The eWAY ManagedCustomerID.',
+      ),
+    ),
+    'primary key' => array('uid'),
+  );
+
+  return $schema;
+}

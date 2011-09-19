@@ -1,0 +1,725 @@
+<?php
+
+/**
+ * Define setting defaults.
+ */
+define('COMMERCE_PAYMENT_EWAY_MODE_DEFAULT', 'cvn_xml');
+define('COMMERCE_PAYMENT_EWAY_LOGO_DEFAULT', 1);
+define('COMMERCE_PAYMENT_EWAY_CHANGE_ORDER_STATUS_DEFAULT', 1);
+define('COMMERCE_PAYMENT_EWAY_SHOW_FAIL_MESSAGE_DEFAULT', 1);
+define('COMMERCE_PAYMENT_EWAY_TEST_MODE_DEFAULT', 0);
+define('COMMERCE_PAYMENT_EWAY_TEST_APPROVE_ANYWAY_DEFAULT', 0);
+
+/**
+ * Define testing values.
+ */
+define('COMMERCE_PAYMENT_EWAY_TEST_CUSTOMER_ID', '87654321');
+define('COMMERCE_PAYMENT_EWAY_TEST_PASSWORD', 'test123');
+define('COMMERCE_PAYMENT_EWAY_TEST_EMAIL_ADDRESS', 'test@eway.com.au');
+define('COMMERCE_PAYMENT_EWAY_TEST_CCNUMBER', '4444333322221111');
+
+/**
+ * Define watchdog options.
+ */
+define('COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_OFF', 0);
+define('COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_ALL', 1);
+define('COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_TEST', 2);
+
+/**
+ * Token payments
+ */
+define('COMMERCE_PAYMENT_EWAY_TOKEN_TEST_CUSTOMER_ID', '9876543211000');
+define('COMMERCE_PAYMENT_EWAY_TOKEN_TEST_CUSTOMER_REF', 'Test 123');
+
+
+/**
+ * Implements hook_commerce_payment_method_info().
+ */
+function commerce_payment_eway_commerce_payment_method_info() {
+  return array(
+    'commerce_payment_eway' => array(
+      'title' => t('eWAY Payment Gateway'),
+      'short_title' => t('eWAY'),
+      'display_title' => t('Credit card'),
+      'description' => t('Provides integration with the eWAY payment gateway.'),
+      'active' => TRUE,
+    ),
+  );
+}
+
+
+/**
+ * Payment method callback: settings form.
+ */
+function commerce_payment_eway_settings_form($settings = NULL) {
+  $form = array();
+
+  // Merge default settings into the stored settings array.
+  $settings = (array) $settings + array(
+    'customer_id' => '',
+    'email_address' => '',
+    'password' => '',
+    'mode' => COMMERCE_PAYMENT_EWAY_MODE_DEFAULT,
+    'status' => COMMERCE_PAYMENT_EWAY_CHANGE_ORDER_STATUS_DEFAULT,
+    'show_fail_message' => COMMERCE_PAYMENT_EWAY_SHOW_FAIL_MESSAGE_DEFAULT,
+    'logo' => COMMERCE_PAYMENT_EWAY_LOGO_DEFAULT,
+    'eway_testing' => array (
+      'test_mode' => COMMERCE_PAYMENT_EWAY_TEST_MODE_DEFAULT,
+      'live_database' => '',
+      'test_mode_display_msg' => 1,
+      'test_approve_anyway' => COMMERCE_PAYMENT_EWAY_TEST_APPROVE_ANYWAY_DEFAULT,
+    ),
+    'eway_watchdog' => array (
+      'watchdog_status' => COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_ALL,
+    ),
+  );
+
+  $form['customer_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('eWAY Customer ID'),
+    '#default_value' => $settings['customer_id'],
+    '#description' => t('Your eWAY customer ID. Provided to you by eWAY.'),
+  );
+  $form['email_address'] = array(
+    '#type' => 'textfield',
+    '#title' => t('eWAY email login'),
+    '#default_value' => $settings['email_address'],
+    '#description' => t('If you are using token payments: the email address you use to login to eWAY.'),
+  );
+  $form['password'] = array(
+    '#type' => 'textfield',
+    '#title' => t('eWAY password'),
+    '#default_value' => $settings['password'],
+    '#description' => t('If you are using token payments: the password you use to login to eWAY.'),
+  );
+
+  // Token Payments require NuSOAP library
+  $status = file_exists(_commerce_payment_eway_nusoap_path());
+  $nusoap_msg = $status ? t('NuSOAP library found, token payments supported.') : t('NuSOAP library not found. Make sure that the <a href="@libraries_url">Libraries API module</a> is installed and the <a href="@nusoap_url">NuSOAP library</a> is installed in %libraries_dir', array('@libraries_url' => url('http://drupal.org/project/libraries'), '@nusoap_url' => url('http://sourceforge.net/projects/nusoap/'), '%libraries_dir' => 'sites/all/libraries/nusoap'));
+  $form['nusoap_status'] = array(
+    '#type' => 'markup',
+    '#markup' => $nusoap_msg,
+    '#prefix' => '<div>',
+    '#suffix' => '</div>',
+  );
+
+  $form['mode'] = array(
+    '#type' => 'select',
+    '#title' => t('eWAY mode'),
+    '#description' => t('eWAY mode used for processing orders. Options are detailed <a href="@url">here</a>. Note that if token payments are selected, a token is created for every user selecting this payment option.', array('@url' => 'http://www.eway.com.au/Developer/LinkingtoeWAY/overview.aspx')),
+    '#options' => array(
+      'merchant_xml' => t('Merchant Hosted (XML)'),
+      'cvn_xml' => t('Merchant Hosted CVN (XML)'),
+      'beagle' => t('Beagle Anti-Fraud'),
+      'token' => t('Token Payments'),
+    ),
+    '#default_value' => $settings['mode'],
+  );
+
+  $form['status'] = array(
+    '#type' => 'select',
+    '#title' => t('Change order status to "Payment Received" upon successful transaction?'),
+    '#description' => t('Change the status of the order if the payment is successful?'),
+    '#options' => array(
+      1 => t('Yes'),
+      0 => t('No'),
+    ),
+    '#default_value' => $settings['status'],
+  );
+  $form['show_fail_message'] = array(
+    '#type' => 'checkbox',
+    '#title' => t("Show gateway's response message on transaction fail."),
+    '#description' => t('Systems such as Drupal Commerce will show a friendly transaction failed message and may not require an additional message.'),
+    '#default_value' => $settings['show_fail_message'],
+  );
+  $form['logo'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display eWAY Logo?'),
+    '#description' => t('Displays the eWay logo when processing credit cards. This may be required for some people depending on your terms with eWAY.'),
+    '#default_value' => $settings['logo'],
+  );
+
+  $form['eway_testing'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Testing'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['eway_testing']['test_mode'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Put the eWAY payment gateway into test mode?'),
+    '#description' => t('When in testing mode, transactions are not processed. The testing eWAY customer ID (87654321) and testing Credit Card Number (4444333322221111) are used for all transactions, overriding the existing settings. Please note there is currently no test service for the %beagle eWAY mode.', array('%beagle' => 'Beagle Anti-Fraud')),
+    '#default_value' => $settings['eway_testing']['test_mode'],
+  );
+  $form['eway_testing']['live_database'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Live database name'),
+    '#description' => t('When a database name is supplied here, transactions will always be in test mode when the name of the default database does not match this database. This setting should make it safer to employ a live database for testing purposes.'),
+    '#default_value' => $settings['eway_testing']['live_database'],
+  );
+  $form['eway_testing']['test_mode_display_msg'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display a message to the user when in test mode?'),
+    '#description' => t('If checked, when a payment is sent to eWAY in testing mode a message will be displayed to the user to tell them that it is in test mode.'),
+    '#default_value' => $settings['eway_testing']['test_mode_display_msg'],
+  );
+  $form['eway_testing']['test_approve_anyway'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('When in test mode, approve "failed" transactions anyway?'),
+    '#description' => t('When in testing mode, a successful transaction will still return a fail. This overcomes that.'),
+    '#default_value' => $settings['eway_testing']['test_approve_anyway'],
+  );
+
+  $form['eway_watchdog'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Watchdog Logging'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['eway_watchdog']['watchdog_status'] = array(
+    '#type' => 'select',
+    '#title' => t('Watchdog status'),
+    '#options' => array(
+      COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_OFF => t('Never log messages'),
+      COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_ALL => t('Always log messages'),
+      COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_TEST => t('Only log messages when in test mode'),
+    ),
+    '#description' => t('Specify when to log messages to the watchdog log.'),
+    '#default_value' => $settings['eway_watchdog']['watchdog_status'],
+  );
+
+  return $form;
+}
+
+
+/**
+ * Validate function for the eWAY payment gateway settings form.
+ * @todo function is not called; no clue how to do this check
+ */
+function commerce_payment_eway_settings_form_validate($form_id, &$form_state) {
+  // TODO: function is not called; no clue how to do this check
+  abc();
+  if ($form_state['values']['eway_mode'] == 'beagle' && $form_state['values']['test_mode'] == 1) {
+    form_set_error('test_mode', t('The eWAY mode %beagle is currently incompatible with testing.', array('%beagle' => 'Beagle Anti-Fraud')));
+  }
+}
+
+
+/**
+ * Payment method callback: checkout form.
+ * @todo implement the save my details checkbox
+ * @todo fix saved year ( should be > 2000 )
+ */
+function commerce_payment_eway_submit_form($payment_method, $pane_values, $checkout_pane, $order) {
+	global $user;
+	module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
+	$form = commerce_payment_credit_card_form(array('code' => ''));
+//	token payments
+	$settings = $payment_method['settings'];
+  	$mode = _commerce_payment_eway_get_data('mode', $settings);
+	if ( $user->uid && $mode == 'token' ) {
+		$customer = _commerce_payment_eway_get_token_detail($user->uid);
+		if ( $customer['ManagedCustomerID'] ) {
+			$form['credit_card']['ManagedCustomerID'] = array(
+    			'#type' => 'textfield',
+    			'#default_value' => $customer['ManagedCustomerID'],
+				'#title' => t('ManagedCustomerID'),
+				'#required' => TRUE,
+				'#disabled' => TRUE,
+			);
+			$form['credit_card']['update_card'] = array(
+    			'#weight' => -10,
+    			'#type' => 'checkbox',
+				'#title' => t('Update card details'),
+			);
+			$form['credit_card']['number']['#default_value'] = $customer['CCNumber'];
+			$form['credit_card']['number']['#description'] = t('Your credit card number has been obscured for security.');
+//			$form['credit_card']['number']['#disabled'] = TRUE;
+			$form['credit_card']['number']['#attributes']['class'][] = 'toggle-disabled';
+			$form['credit_card']['exp_month']['#default_value'] = $customer['CCExpiryMonth'];
+//			$form['credit_card']['exp_month']['#disabled'] = TRUE;
+			$form['credit_card']['exp_month']['#attributes']['class'][] = 'toggle-disabled';
+			$form['credit_card']['exp_year']['#default_value'] = $customer['CCExpiryYear'];
+//			$form['credit_card']['exp_year']['#disabled'] = TRUE;
+			$form['credit_card']['exp_year']['#attributes']['class'][] = 'toggle-disabled';
+
+//	enable and disable these elements			
+			drupal_add_js("
+				jQuery(document).ready(function(){
+					if ( jQuery('#edit-commerce-payment-payment-details-credit-card-update-card').not(':checked') ) {
+						jQuery('.toggle-disabled').parent('div').addClass('form-disabled');
+					}
+					
+//	check the update checkbox					
+					jQuery('#edit-commerce-payment-payment-details-credit-card-number,#edit-commerce-payment-payment-details-credit-card-exp-month,#edit-commerce-payment-payment-details-credit-card-exp-year').live('change', 
+						function(){
+							jQuery('#edit-commerce-payment-payment-details-credit-card-update-card').not(':checked').click();
+						}
+					);
+
+//	toggle off the disabled class
+					jQuery('#edit-commerce-payment-payment-details-credit-card-update-card').live('change', 
+						function(){
+							disabled = true;
+							if ( jQuery(this).is(':checked') ) {
+								disabled = false;
+							}
+							jQuery(this).parents('form').find('.toggle-disabled').each(function() {
+//								jQuery(this).attr('disabled', disabled);
+								if ( disabled )
+									jQuery(this).parent('div').addClass('form-disabled');
+								else
+									jQuery(this).parent('div').removeClass('form-disabled');
+							});
+						}
+					);
+				});
+			", 'inline');
+		} else {
+  			$mode = _commerce_payment_eway_get_data('mode', $settings);
+			$form['credit_card']['save_details'] = array(
+    			'#weight' => -10,
+    			'#type' => 'checkbox',
+				'#title' => t('Keep my details on file'),
+				'#default' => 1,
+				'#description' => t('Your details will be stored securely at the payment gateway'),
+			);
+		}
+	}
+  	return $form;
+}
+
+
+/**
+ * Payment method callback: checkout form validation.
+ * @todo check credit card if performing a token update
+ * @todo create a token payment on submit (in token charge (process and request))
+ */
+function commerce_payment_eway_submit_form_validate($payment_method, $pane_form, $pane_values, $order, $form_parents = array()) {
+	//	if we're using token payments and we have a token then this is already valid
+	//	unless we're updating the card then we need to validate that first
+	$settings = $payment_method['settings'];
+  	$mode = _commerce_payment_eway_get_data('mode', $settings);
+	if ( $mode == 'token' && $pane_values['credit_card']['ManagedCustomerID'] ) {
+//	@tofix - creditcard number doesn't transfer (it returns the xxxx number to here). is this because its disabled ?
+//		error_log(var_export($pane_values['credit_card'], TRUE));
+		if ( $pane_values['credit_card']['update_card'] ) {
+    		module_load_include ('class.inc', 'commerce_payment_eway','includes/eway_base');
+    		module_load_include ('class.inc', 'commerce_payment_eway', 'includes/eway_token');
+//	@tofix - check for a valid credit card
+//	update the customer details
+			$details = array(
+				'CCNumber' => $pane_values['credit_card']['number'],
+				'CCExpiryYear' => $pane_values['credit_card']['exp_year'],
+				'CCExpiryMonth' => $pane_values['credit_card']['exp_month'],
+			);
+	    	$processor = new eway_token($settings);
+			$response = $processor->update_customer($pane_values['credit_card']['ManagedCustomerID'], $details);
+//	eway is happy–return 
+			if ( $response === TRUE ) {
+				drupal_set_message("Updated credit card details");
+				return TRUE;	
+			} else {
+				$messages[] = "Error: " . $response;
+				drupal_set_message(implode("<br />", $messages), 'error');
+				form_set_error(t("Failed to update credit card details."));
+			}
+	
+		} else {
+			return TRUE;
+		}
+	}
+	
+  module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
+
+  // Validate the credit card fields.
+  $settings = array(
+    'form_parents' => array_merge($form_parents, array('credit_card')),
+  );
+
+  if (!commerce_payment_credit_card_validate($pane_values['credit_card'], $settings)) {
+    return FALSE;
+  }
+}
+
+
+/**
+ * Payment method callback: checkout form submission.
+ */
+function commerce_payment_eway_submit_form_submit($payment_method, $pane_form, $pane_values, $order, $charge) {
+  global $user, $response;
+
+  $settings = $payment_method['settings'];
+  $credit_card = $pane_values['credit_card'];
+
+  // Build a description to send to the payment gateway.
+  $description = theme('commerce_payment_eway_transaction_description', array('order' => $order));
+  // Trim the description to eWay's limit of 10000 characters,
+  // which is ridiculously long anyway.
+  $description = substr($description, 0, 10000);
+
+  $profile_id = $order->commerce_customer_billing['und'][0]['profile_id'];
+  $profile = commerce_customer_profile_load ($profile_id);
+  $address = $profile->commerce_customer_address['und'][0];
+
+  // Display a message to the user about test mode if necessary.
+  _commerce_payment_eway_display_test_mode_msg($settings);
+
+  $mode = _commerce_payment_eway_get_data('mode', $settings);
+  module_load_include ('class.inc', 'commerce_payment_eway','includes/eway_base');
+  module_load_include ('class.inc', 'commerce_payment_eway','includes/eway_xml_common');
+  module_load_include ('class.inc', 'commerce_payment_eway', 'includes/eway_' . $mode);
+  $class_name = 'eway_' . $mode;
+  $processor = new $class_name($settings);
+  $processor->charge ($settings, $description, $charge, $credit_card, $address, $order->order_id, $order->uid, $order->mail);
+  if (isset ($processor->unsaved_customer_data)) {
+    // Keep track of unsaved customer data as we can only save this when the
+    //account is created. Obviously this means we store the credit card
+    // details on the server for a short while, big oops.
+    // You'll need to add an action to the "Create a new account for an
+    // anonymous order" and "Assign an anonymous order to a pre-existing user"
+    // rule to enable token billing
+    $_SESSION['eway_customer_data'] = $processor->unsaved_customer_data;
+    $_SESSION['eway_settings'] = $settings;
+  }
+
+  $transaction = _commerce_payment_eway_save_transaction ($settings, $order, $charge, $processor->return_info, $payment_method['instance_id']);
+
+  return $transaction->status == COMMERCE_PAYMENT_STATUS_SUCCESS;
+}
+
+
+/*
+ * Given eWAY result, save payment transaction
+ */
+function _commerce_payment_eway_save_transaction ($settings, $order, $charge, $return_info, $instance_id = 0) {
+  // $return_info might be FALSE if request() failed.
+  $transaction = FALSE;
+  if (!empty($return_info) && array_key_exists('txStatus', $return_info['eway_response'])) {
+    // Prepare a transaction object to log the API response.
+    $transaction = commerce_payment_transaction_new('commerce_payment_eway', $order->order_id);
+    $transaction->instance_id = $instance_id;
+    $transaction->remote_id = (string) $return_info['eway_response']['txTransactionNumber'];
+    $transaction->amount = $charge['amount'];
+    $transaction->currency_code = $charge['currency_code'];
+    $transaction->remote_status = $return_info['eway_response']['txStatus'];
+    $transaction->payload = print_r ($return_info, true);
+    switch ($return_info['eway_response']['txStatus']) {
+      case 'false':
+        $comment = t('Credit card payment declined') . ': ' . $return_info['eway_response']['txReturnNo'] . ': ' . $return_info['eway_response']['txReturnDescription'];
+        if ($settings['show_fail_message']) {
+          $message = t('Credit card payment declined') . ': ' . $return_info['eway_response']['txReturnNo'] . ': ' . $return_info['eway_response']['txReturnDescription'];
+          drupal_set_message($message, 'error');
+        }
+        $eway_testing = commerce_payment_eway_in_testing_mode($settings);
+        if ($settings['eway_testing']['test_approve_anyway'] && $eway_testing)
+          $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
+        else
+          $transaction->status = COMMERCE_PAYMENT_STATUS_FAILURE;
+        break;
+      case 'true':
+        $comment = t('Credit card payment processed successfully') . ': ' . $return_info['eway_response']['txReturnNo'] . ': ' . $return_info['eway_response']['txReturnDescription'];
+        $transaction->status = COMMERCE_PAYMENT_STATUS_SUCCESS;
+        break;
+    }
+    $transaction->message = $comment;
+    commerce_payment_transaction_save($transaction);
+  }
+  return $transaction;
+}
+
+
+/*
+ * Delete user data when user is deleted
+ */
+function commerce_payment_eway_user_delete ($account) {
+  db_delete ('commerce_eway_token')->condition ('uid', $account->uid)->execute();
+}
+
+/**
+ * Helper function to get data, do checking if it's in test mode.
+ *
+ * @param $key
+ *   The data item to get.
+ * @param $value
+ *   The value to use for when not in testing mode for data that isn't stored
+ *   in drupal variables.
+ */
+function _commerce_payment_eway_get_data($key, $settings, $value = '') {
+  $return_val = '';
+  $eway_testing = commerce_payment_eway_in_testing_mode($settings);
+
+  switch ($key) {
+    case 'customer_id':
+      $return_val = $eway_testing ? COMMERCE_PAYMENT_EWAY_TEST_CUSTOMER_ID : $settings['customer_id'];
+      break;
+    case 'user_name':
+      $return_val = $eway_testing ? COMMERCE_PAYMENT_EWAY_TEST_EMAIL_ADDRESS : $settings['email_address'];
+      break;
+    case 'password':
+      $return_val = $eway_testing ? COMMERCE_PAYMENT_EWAY_TEST_PASSWORD : $settings['password'];
+      break;
+    case 'mode':
+      $return_val = $settings['mode'];
+      break;
+    case 'cc_number':
+      $return_val = $eway_testing ? COMMERCE_PAYMENT_EWAY_TEST_CCNUMBER : $value;
+      break;
+  }
+  return $return_val;
+}
+
+
+function commerce_payment_eway_in_testing_mode($settings) {
+  global $databases;
+  return $settings['eway_testing']['test_mode'] || ($settings['eway_testing']['live_database'] && $databases['default']['default']['database'] != $settings['eway_testing']['live_database']);
+}
+
+
+/**
+ * Returns the path of the NuSOAP library.
+ */
+function _commerce_payment_eway_nusoap_path() {
+  if (function_exists('libraries_get_path')) {
+    return libraries_get_path('nusoap') . '/lib/nusoap.php';
+  }
+  return '';
+}
+
+
+/**
+ * Helper function to determine whether or not to log messages to watchdog.
+ */
+function _commerce_payment_eway_log_to_watchdog($settings) {
+  $status = $settings['eway_watchdog']['watchdog_status'];
+  if ($status == COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_ALL) {
+    return TRUE;
+  }
+  if ($status == COMMERCE_PAYMENT_EWAY_WATCHDOG_STATUS_TEST && commerce_payment_eway_in_testing_mode($settings)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+
+/**
+ * Helper function to display a message to the user when payments to eWAY are
+ * done while in test mode.
+ */
+function _commerce_payment_eway_display_test_mode_msg($settings) {
+  if (commerce_payment_eway_in_testing_mode ($settings) && $settings['eway_testing']['test_mode_display_msg']) {
+    drupal_set_message(t('The Drupal Commerce eWAY payment gateway is currently in test mode.'), 'warning', FALSE);
+  }
+}
+
+
+/**
+ * Implement hook_theme
+ */
+function commerce_payment_eway_theme($existing, $type, $theme, $path) {
+  return array (
+    'commerce_payment_eway_transaction_description' => array(
+      'variables' => array ('order'),
+      'file' => 'includes/commerce_payment_eway.theme.inc',
+    ),
+  );
+}
+
+
+/** 
+* Implementation of hook_menu(). 
+*/ 
+function commerce_payment_eway_menu() {
+	$items = array(); 
+	$items['user/%user/card'] = array( 
+      'title' => t('Credit card'), 
+      'weight' => 20,
+      'description' => t('Edit your credit card settings.'), 
+      'page callback' => 'drupal_get_form', 
+      'access callback' => 'custom_tab_access',
+      'type' => MENU_LOCAL_TASK,
+
+      'page arguments' => array('commerce_payment_eway_creditcard_settings_form'), 
+    ); 
+//	print_r($items);
+  
+	return $items;
+} 
+
+
+function custom_tab_access() {
+	$uid = arg(1);
+	global $user;
+	if ( $user->uid == $uid )
+		return TRUE;
+}
+
+
+/*
+
+*/
+function commerce_payment_eway_creditcard_settings_form($form, &$form_state) {
+	$uid = arg(1);
+	$customer = _commerce_payment_eway_get_token_detail($uid);
+//	print_r($customer);
+	$form['CustomerTitle'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => $customer['CustomerTitle'],
+		'#title' => t('Title'),
+		'#size' => 4,
+		'#required' => TRUE,
+	);
+	$form['CustomerFirstName'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => $customer['CustomerFirstName'],
+		'#title' => t('First name'),
+		'#required' => TRUE,
+	);
+	$form['CustomerLastName'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => $customer['CustomerLastName'],
+		'#title' => t('Last name'),
+		'#required' => TRUE,
+	);
+	$form['CCNumber'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => $customer['CCNumber'],
+    	'#description' => t('Your credit card number has been obscured for security.'),
+		'#title' => t('Credit card number'),
+		'#required' => TRUE,
+	);
+	$form['CCExpiryMonth'] = array(
+		'#type' => 'select',
+		'#options' => array (
+			'01' => t('January'),
+			'02' => t('February'),
+			'03' => t('March'),
+			'04' => t('April'),
+			'05' => t('May'),
+			'06' => t('June'),
+			'07' => t('July'),
+			'08' => t('August'),
+ 			'09' => t('September'),
+			'10' => t('October'),
+			'11' => t('November'),
+			'12' => t('December'),
+		),
+		'#prefix]' => '<div class="commerce-credit-card-expiration">',
+    	'#default_value' => $customer['CCExpiryMonth'],
+		'#title' => t('Expiration'),
+		'#multiple' => FALSE,
+		'#required' => TRUE,
+	);
+	$d = new DateTime("now");
+	$max = 20;
+	$years = array();
+	for ( $i = 0; $i <= $max; $i++ ) {
+		$years[$d->format('y')] = $d->format('Y');
+		$d->modify('+1 year');
+	}
+	
+	$form['CCExpiryYear'] = array(
+    	'#type' => 'select',
+		'#options' => $years,
+		'#suffix' => '</div>',
+    	'#default_value' => $customer['CCExpiryYear'],
+		'#multiple' => FALSE,
+		'#required' => TRUE,
+	);
+	$form['ManagedCustomerID'] = array(
+    	'#type' => 'textfield',
+    	'#default_value' => $customer['ManagedCustomerID'],
+		'#title' => t('ManagedCustomerId'),
+		'#required' => FALSE,
+	);
+	
+	$form['submit'] = array(
+    	'#type' => 'submit',
+    	'#value' => t('Update'),
+		'#form_id' => "commerce_payment_eway_creditcard_form",
+	);
+	$form['delete'] = array(
+    	'#type' => 'submit',
+    	'#value' => t('Delete my details'),
+		'#description' => t('This removes your credit card details from our records and the payment gateway\'s servers'),
+	);
+	return $form;
+}
+
+/*
+ *	check that we have all the details eway requires
+ */
+function commerce_payment_eway_creditcard_settings_form_validate($form, &$form_state) {
+//	if we are deleting the details don't bother validating
+	if ( $form_state['input']['op'] = t('Delete my details') ) {
+		return TRUE;
+	}
+//	fix the credit card number removing spaces and dashes
+	$form_state['values']['CCNumber'] = str_replace(array(" ","-"), "", $form_state['values']['CCNumber']);
+	
+//	check that the card number looks like a number
+//	  module_load_include('inc', 'commerce_payment', 'includes/commerce_payment.credit_card');
+//	what should settings look like?
+//	  if (!commerce_payment_credit_card_validate($pane_values['credit_card'], $settings)) {
+	if ( ! is_numeric($form_state['values']['CCNumber']) ) {
+		form_set_error('CCNumber', t("Please enter a valid credit card number."));
+	}
+
+//	check that the expiry date is in the future	
+//	the last day of the month
+	$expiry = mktime(0, 0, 0, intval($form_state['values']['CCExpiryMonth']) + 1, 0, intval($form_state['values']['CCExpiryYear']));
+	if ( $expiry < time() ) {
+		form_set_error('CCExpiryMonth', t("Please enter an expiry date in the future."));
+		form_set_error('CCExpiryYear');
+	}
+}
+
+/*	
+ *	call UpdateCustomer or delete customer
+ */
+function commerce_payment_eway_creditcard_settings_form_submit($form_id, &$form_state) {
+	error_log("form submit");
+	error_log(var_export($form_state['clicked_button']['#parents'][0], TRUE));
+	if ( $form_state['values']['ManagedCustomerID'] ) {
+    	module_load_include ('class.inc', 'commerce_payment_eway','includes/eway_base');
+    	module_load_include ('class.inc', 'commerce_payment_eway', 'includes/eway_token');
+		$settings = commerce_payment_eway_settings_form();
+    	$processor = new eway_token($settings);
+		error_log($form_state['input']['op']);
+		if ( $form_state['input']['op'] = t('Delete my details') ) {
+			$uid = arg(1);
+			$response = $processor->delete_customer($form_state['values']['ManagedCustomerID'], $uid);
+		} else {
+			$response = $processor->update_customer($form_state['values']['ManagedCustomerID'], $form_state['values']);
+		}
+		if ( $response === TRUE ) {
+			drupal_set_message("Updated credit card details");			
+		} else {
+			$messages[] = "Error: " . $response;
+			drupal_set_message(implode("<br />", $messages), 'error');
+		}
+	}
+}
+
+
+/*
+*/
+function _commerce_payment_eway_get_token_detail($uid) {
+	$ManagedCustomerId = db_query ('select eway_id from {commerce_eway_token} where uid = :uid', array (':uid' => $uid))->fetchField();
+  	if ($ManagedCustomerId) {
+    	module_load_include ('class.inc', 'commerce_payment_eway','includes/eway_base');
+    	module_load_include ('class.inc', 'commerce_payment_eway', 'includes/eway_token');
+ 		$settings = commerce_payment_eway_settings_form();
+    	$processor = new eway_token($settings);
+		$response = $processor->query_customer($ManagedCustomerId);
+		if ( $response ) {
+			return $response;
+		} else {
+			return array();
+		}
+  	} else {
+	
+	}
+	return;
+}
+
