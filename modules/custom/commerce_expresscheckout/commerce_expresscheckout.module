@@ -13,8 +13,8 @@
 function commerce_expresscheckout_menu() {
 	$items = array(); 
 //	$items['checkout/%/express'] = array( 
-	$items['checkout/%'] = array( 
-//	$items['expresscheckout/%'] = array( 
+//	$items['checkout/%'] = array( 
+	$items['expresscheckout/%'] = array( 
       'title' => 'Express checkout', 
       'weight' => 20,
       'description' => t('Checkout quickly on one page.'), 
@@ -43,7 +43,9 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 //	$order = null;
 	$pages = commerce_checkout_pages();
 	$panes = commerce_checkout_panes(array('enabled' => TRUE));
-$debug = TRUE;
+
+	$debug = TRUE;
+	
 //	iterate over each of the pages (pane sets) looking for panes that belong in it
 	foreach ($pages as $page_id => $checkout_page) {
 //	create fieldsets
@@ -63,7 +65,7 @@ $debug = TRUE;
 		}
 
 		foreach ($panes as $pane_id => $checkout_pane_local) {
-//			krumo($checkout_pane_local);
+//			print "<h2>$pane_id</h2>";
 //	the redirect panes cause redirection - we can't have that
 			if ( strpos($pane_id, 'redirect') )
 				continue;
@@ -76,7 +78,7 @@ $debug = TRUE;
 //	Only display the pane if there is data in the pane.
 				if (!empty($pane_data)) {
 				// Add a row for it in the review data.
-					$form[$page_id . '_fieldset'][$page_id . '_' . $pane_id . '_fieldset'] = array(
+					$form[$page_id . '_fieldset'][$pane_id . '_fieldset'] = array(
 						'#title' => t($checkout_pane_local['title']),
 						'data' => $pane_data,
 						'#prefix' => '<div id="' . $pane_id . '_div">',
@@ -87,7 +89,7 @@ $debug = TRUE;
 						//'#description' => t($checkout_pane_local['help']),
 					);
 					if ( $debug ) {
-						$form[$page_id . '_fieldset'][$page_id . '_' . $pane_id . '_fieldset']['#title'] .= " [" . $pane_id . "]";
+						$form[$page_id . '_fieldset'][$pane_id . '_fieldset']['#title'] .= " [" . $pane_id . "]";
 					}
 				}
 			}
@@ -103,9 +105,39 @@ $debug = TRUE;
 		
 	_commerce_expresscheckout_form_extend(&$form);
 
+//	@todo abstract out so we can move the pane from page to page	
+	$form['checkout_fieldset']['customer_profile_billing_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_test';
+	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_test';
+//	krumo($form);
 	return $form;
 }
 
+
+/* from addressfield.module fn addressfield_standard_widget_refresh */
+function _commerce_expresscheckout_test($form, $form_state) {
+  // The target element is one element below the triggering country selector.
+  $array_parents = $form_state['triggering_element']['#array_parents'];
+  array_pop($array_parents);
+
+  // Iterate over the form parents to find the element.
+//  $element = $form;
+//	@todo this should be broken out so the pane can be on any page
+  $element = $form['checkout_fieldset'];
+  foreach ($array_parents as $name) {
+    $element = &$element[$name];
+    if (!empty($element['#addressfield'])) {
+      break;
+    }
+  }
+
+  // Return the address block, but remove the '_weight' element inserted
+  // by the field API.
+  unset($element['_weight']);
+  return $element;
+
+
+	return "TEST";
+}
 
 /*
 	Implements hook_form_validate
@@ -134,13 +166,14 @@ function commerce_expresscheckout_form_submit() {
 function _commerce_expresscheckout_form_extend(&$form) {
 //	krumo($form);
 //	add use different address checkbox for billing shipping	
-	$container_id = "checkout_customer_profile_billing_fieldset";
+	$container_id = "customer_profile_billing_fieldset";
 	$field = array('shipping_same' => array(
     	'#title' => t('Ship to a different address'),
     	'#type' => 'checkbox',		
 	));
 	_commerce_expresscheckout_form_add_field(&$form, $container_id, $field);
 
+//	add in next buttons per section
 	foreach ( commerce_checkout_pages() as $page_id=>$page_data ) {
 		$container_id = $page_id . "_fieldset";
 		$field = array($page_id . '_next' => array(
@@ -156,6 +189,12 @@ function _commerce_expresscheckout_form_extend(&$form) {
 	_commerce_expresscheckout_form_add_ajax_callback(&$form, 'shipping_same', 'customer_profile_shipping');
 //	_commerce_expresscheckout_form_add_ajax_callback(&$form, 'shipping_same', 'review');
 	
+//	modify the ajax response for addressfield as the form too nested for its call back to find
+//	function addressfield_standard_widget_refresh($form, $form_state) {
+//	form-item-commerce-customer-address-und-0-country
+//	edit-commerce-customer-address-und-0-country
+	//	customer_profile_billing
+//	_commerce_expresscheckout_form_add_ajax_callback(&$form, 'shipping_country', 'customer_profile_shipping');
 	
 /*
 	$form['submit'] = array(
@@ -168,12 +207,12 @@ function _commerce_expresscheckout_form_extend(&$form) {
 }
 
 
-function _commerce_expresscheckout_customer_profile_shipping_callback($form, $form_state) {
-	$form['checkout_fieldset']['checkout_customer_profile_shipping_fieldset']['#collapsed'] = FALSE;
-	$form['checkout_fieldset']['checkout_customer_profile_shipping_fieldset']['#collapsible'] = FALSE;
-	$form['checkout_fieldset']['checkout_customer_profile_shipping_fieldset']['#title'] .= " *";
-	$form['checkout_fieldset']['checkout_customer_profile_shipping_fieldset']['data']['commerce_customer_address']['und'][0]['name_block']['name_line']['#value'] = "SILLY";
-	return $form['checkout_fieldset']['checkout_customer_profile_shipping_fieldset'];
+function _commerce_expresscustomer_profile_shipping_callback($form, $form_state) {
+	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['#collapsed'] = FALSE;
+	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['#collapsible'] = FALSE;
+	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['#title'] .= " *";
+	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['data']['commerce_customer_address']['und'][0]['name_block']['name_line']['#value'] = "SILLY";
+	return $form['checkout_fieldset']['customer_profile_shipping_fieldset'];
 }
 
 
@@ -182,6 +221,7 @@ function _commerce_expresscheckout_review_callback($form, $form_state) {
 }
 
 
+/* iterate over the form for the correct trigger and add our callback */
 function _commerce_expresscheckout_form_add_ajax_callback(&$form, $trigger_id, $container_id) {
 	foreach ( $form as $id=>&$fields ) {
 		if ( $id == $trigger_id ) {
