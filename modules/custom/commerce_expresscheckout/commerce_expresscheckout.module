@@ -106,23 +106,32 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 	_commerce_expresscheckout_form_extend(&$form);
 
 //	@todo abstract out so we can move the pane from page to page	
-	$form['checkout_fieldset']['customer_profile_billing_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_test';
-	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_test';
+	$form['checkout_fieldset']['customer_profile_billing_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_addressfield_callback';
+	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_addressfield_callback';
 //	krumo($form);
 	return $form;
 }
 
 
-/* from addressfield.module fn addressfield_standard_widget_refresh */
-function _commerce_expresscheckout_test($form, $form_state) {
-  // The target element is one element below the triggering country selector.
+function _commerce_expresscheckout_test($form, $form_state) { return "TEST"; }
+	
+	
+/* 	
+	repair callbacks from addressfields
+	from addressfield.module fn addressfield_standard_widget_refresh 
+*/
+function _commerce_expresscheckout_addressfield_callback($form, $form_state) {
+//	the default
+//	return addressfield_standard_widget_refresh($form, $form_state);
+
+  // The target element is one element below the triggering country selector.	
   $array_parents = $form_state['triggering_element']['#array_parents'];
   array_pop($array_parents);
 
   // Iterate over the form parents to find the element.
+//	our form is nested one layer deep
 //  $element = $form;
-//	@todo this should be broken out so the pane can be on any page
-  $element = $form['checkout_fieldset'];
+  $element = $form[$array_parents[0]];
   foreach ($array_parents as $name) {
     $element = &$element[$name];
     if (!empty($element['#addressfield'])) {
@@ -134,9 +143,6 @@ function _commerce_expresscheckout_test($form, $form_state) {
   // by the field API.
   unset($element['_weight']);
   return $element;
-
-
-	return "TEST";
 }
 
 /*
@@ -207,7 +213,7 @@ function _commerce_expresscheckout_form_extend(&$form) {
 }
 
 
-function _commerce_expresscustomer_profile_shipping_callback($form, $form_state) {
+function _commerce_expresscheckout_customer_profile_shipping_callback($form, $form_state) {
 	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['#collapsed'] = FALSE;
 	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['#collapsible'] = FALSE;
 	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['#title'] .= " *";
