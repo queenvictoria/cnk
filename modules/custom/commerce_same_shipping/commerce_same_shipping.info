@@ -1,0 +1,10 @@
+name = Same shipping
+description = Adds a checkbox to use the billing address for shipping
+package = Commerce (contrib)
+core = 7.x
+
+dependencies[] = commerce
+dependencies[] = commerce_checkout
+
+version = "7.x-1.x-dev"
+
