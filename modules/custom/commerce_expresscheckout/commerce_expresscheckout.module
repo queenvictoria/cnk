@@ -108,7 +108,7 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 //	@todo abstract out so we can move the pane from page to page	
 	$form['checkout_fieldset']['customer_profile_billing_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_addressfield_callback';
 	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_addressfield_callback';
-//	krumo($form);
+	krumo($form);
 	return $form;
 }
 
@@ -171,18 +171,22 @@ function commerce_expresscheckout_form_submit() {
  */
 function _commerce_expresscheckout_form_extend(&$form) {
 //	add in next buttons per section
+	$i = 1;
 	foreach ( commerce_checkout_pages() as $page_id=>$page_data ) {
 		$container_id = $page_id . "_fieldset";
 		$field = array($page_id . '_next' => array(
-	    	'#value' => t('Next'),
+//	if values aren't different then the ajax callback calls the wrong method
+	    	'#value' => t('Step ' . ++$i . ' >'),
 	    	'#type' => 'button',		
 		));
 		if ( $page_id == 'complete' ) {
 			$field[$page_id . '_next']['#value'] = t("Finished");
 		}
 		_commerce_expresscheckout_form_add_field(&$form, $container_id, $field);		
+		_commerce_expresscheckout_form_add_ajax_callback(&$form, $page_id, $page_id . '_next');
 	};
 	
+//	_commerce_expresscheckout_form_add_ajax_callback(&$form, 'checkout_next', 'checkout');
 	
 //	modify the ajax response for addressfield as the form too nested for its call back to find
 //	function addressfield_standard_widget_refresh($form, $form_state) {
@@ -198,17 +202,39 @@ function _commerce_expresscheckout_form_extend(&$form) {
 		'#form_id' => "commerce_expresscheckout_form",
 	);
 */
+//	krumo($form);
 
+}
+
+function _commerce_expresscheckout_default_callback($form, $form_state) {
+  	$array_parents = $form_state['triggering_element']['#array_parents'];
+//	remove the trigger
+	array_pop($array_parents);
+//	this is our parent
+	$parent = array_pop($array_parents);
+	return $form[$parent];	
+}
+
+
+function _commerce_expresscheckout_checkout_callback($form, $form_state) {
+	error_log('called _commerce_expresscheckout_checkout_callback');
+	return _commerce_expresscheckout_default_callback($form, $form_state);
 }
 
 
 function _commerce_expresscheckout_review_callback($form, $form_state) {
-	return $form['review_fieldset'];
+	return _commerce_expresscheckout_default_callback($form, $form_state);
+}
+
+
+function _commerce_expresscheckout_complete_callback($form, $form_state) {
+	error_log('called _commerce_expresscheckout_complete_callback');
+	return _commerce_expresscheckout_default_callback($form, $form_state);
 }
 
 
 /* iterate over the form for the correct trigger and add our callback */
-function _commerce_expresscheckout_form_add_ajax_callback(&$form, $trigger_id, $container_id) {
+function _commerce_expresscheckout_form_add_ajax_callback(&$form, $container_id, $trigger_id) {
 	foreach ( $form as $id=>&$fields ) {
 		if ( $id == $trigger_id ) {
 			$fields['#ajax'] = array(
@@ -217,11 +243,12 @@ function _commerce_expresscheckout_form_add_ajax_callback(&$form, $trigger_id, $
 		      'method' => 'replace',
 		      'effect' => 'fade',
 		    );
+			error_log($trigger_id . ' -> ' . $fields['#ajax']['callback']);
 			return;
 		}
 		if ( is_array($fields) && array_key_exists('#type', $fields) ) {
 			if ( $fields['#type'] == 'fieldset' ) {
-				_commerce_expresscheckout_form_add_ajax_callback(&$form[$id], $trigger_id, $container_id);
+				_commerce_expresscheckout_form_add_ajax_callback(&$form[$id], $container_id, $trigger_id);
 			}
 		}
 	}
