@@ -2,6 +2,10 @@
 /*
 	review panes commerce_checkout_review_pane_checkout_form()
 
+@todo
+	-	validation (?) is mirroring billing into shipping (can't change shipping)
+	-	should this be a multistep form ? ( see examples module )
+	-	should this be multiple forms on one page ?
 */
 
 
@@ -21,7 +25,7 @@ function commerce_expresscheckout_menu() {
       'page callback' => 'drupal_get_form', 
 //		inherited from checkout if path is checkout/%/express
 //      'access' => user_access('access checkout'),
-    'access arguments' => array('access checkout'),
+      'access arguments' => array('access checkout'),
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'page arguments' => array('commerce_expresscheckout_form', 1),
 	);
@@ -45,12 +49,12 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 	$panes = commerce_checkout_panes(array('enabled' => TRUE));
 
 	$debug = TRUE;
-	
+	$i = 1;
 //	iterate over each of the pages (pane sets) looking for panes that belong in it
 	foreach ($pages as $page_id => $checkout_page) {
 //	create fieldsets
 		$form[$page_id . '_fieldset'] = array(
-			'#title' => t($checkout_page['title']),
+			'#title' => t("Step " . $i++ . " – " . $checkout_page['title']),
 			// The prefix/suffix provide the div that we're replacing, named by
 			// #ajax['wrapper'] above.
 			'#prefix' => '<div id="' . $page_id . '_div">',
@@ -64,6 +68,7 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 			$form[$page_id . '_fieldset']['#title'] .= " [" . $page_id . "]";
 		}
 
+		$k = 1;
 		foreach ($panes as $pane_id => $checkout_pane_local) {
 //			print "<h2>$pane_id</h2>";
 //	the redirect panes cause redirection - we can't have that
@@ -78,8 +83,10 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 //	Only display the pane if there is data in the pane.
 				if (!empty($pane_data)) {
 				// Add a row for it in the review data.
+					$number = ($i-1) + $k/10;
+					$k++;
 					$form[$page_id . '_fieldset'][$pane_id . '_fieldset'] = array(
-						'#title' => t($checkout_pane_local['title']),
+						'#title' => t("@number " . $checkout_pane_local['title'], array('@number'=>$number)),
 						'data' => $pane_data,
 						'#prefix' => '<div id="' . $pane_id . '_div">',
 						'#suffix' => '</div>',
@@ -99,6 +106,7 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 			$form[$page_id . '_fieldset']['#classes'][] = "panes-" . $form[$page_id . '_fieldset']['#count'];
 		} else {
 			unset($form[$page_id . '_fieldset']);
+			$i--;
 		}
 		
 	}
@@ -108,7 +116,13 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 //	@todo abstract out so we can move the pane from page to page	
 	$form['checkout_fieldset']['customer_profile_billing_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_addressfield_callback';
 	$form['checkout_fieldset']['customer_profile_shipping_fieldset']['data']['commerce_customer_address']['und'][0]['country']['#ajax']['callback'] = '_commerce_expresscheckout_addressfield_callback';
-	krumo($form);
+
+//	krumo($form);
+/*
+	print "<pre>";
+	print_r($form);
+	print "</pre>";
+*/
 	return $form;
 }
 
@@ -212,6 +226,7 @@ function _commerce_expresscheckout_default_callback($form, $form_state) {
 	array_pop($array_parents);
 //	this is our parent
 	$parent = array_pop($array_parents);
+//	 return (var_export($form[$parent], TRUE));
 	return $form[$parent];	
 }
 
@@ -254,7 +269,7 @@ function _commerce_expresscheckout_form_add_ajax_callback(&$form, $container_id,
 	}
 }
 
-
+/* add a new field to the correct parent element */
 function _commerce_expresscheckout_form_add_field(&$form, $container_id, $field) {
 	foreach ( $form as $id=>&$fields ) {
 		if ( $id == $container_id ) {
