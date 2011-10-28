@@ -82,7 +82,17 @@ projects[commerce_product_display_manager][version] = "1.x-dev"
 projects[commerce_coupon][subdir] = "contrib"
 projects[commerce_coupon][version] = "1.x-dev"
 projects[commerce_features][subdir] = "contrib"
-projects[commerce_coupon][version] = "1.x-dev"
+projects[commerce_features][version] = "1.x-dev"
+projects[commerce_google_analytics][subdir] = "contrib"
+projects[commerce_google_analytics][version] = "1.x-dev"
+projects[commerce_product_bundle][subdir] = "contrib"
+projects[commerce_product_bundle][version] = "1.x-dev"
+
+; sandbox projects
+; checkout progress
+; http://git.drupal.org/sandbox/webmasterkai/1291268.git commerce_checkout_progress
+; ajax cart
+; git clone http://git.drupal.org/sandbox/webmasterkai/1299260.git dc_cart_ajax
 
 projects[devel][subdir] = "developer"
 projects[devel][subdir] = "devel_themer"
@@ -123,7 +133,8 @@ projects[fb][patch][1064250] = http://drupal.org/files/issues/fb_user.module.pat
 ; neither supports api v3 yet so pin to latest v2
 libraries[facebook-php-sdk][download][type] = "get"
 libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk/tarball/v2.1.1"
-libraries[facebook-php-sdk][download][tag] = v2.1.2
+; fb now supports 3
+; libraries[facebook-php-sdk][download][tag] = v2.1.2
 libraries[facebook-php-sdk][destination] = "libraries"   
 
 ; themes
