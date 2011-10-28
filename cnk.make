@@ -132,8 +132,8 @@ projects[fb][patch][1064250] = http://drupal.org/files/issues/fb_user.module.pat
 ; projects[] = fb
 ; neither supports api v3 yet so pin to latest v2
 libraries[facebook-php-sdk][download][type] = "get"
-libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk/tarball/v2.1.1"
 ; fb now supports 3
+libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk/tarball/v3.1.1"
 ; libraries[facebook-php-sdk][download][tag] = v2.1.2
 libraries[facebook-php-sdk][destination] = "libraries"   
 
