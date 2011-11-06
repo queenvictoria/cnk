@@ -79,11 +79,14 @@ function _cnk_install() {
 
 //	_cnk_configure_fivestar("product_display");
 	_cnk_configure_facebook();
+
+//  for share this
 //	_cnk_configure_share();
-	
+
+//  for paypal	
 //	_cnk_configure_payments();
 	
-//	_cnk_dummy_content(10);
+	_cnk_dummy_content(10);
 }
 
 
