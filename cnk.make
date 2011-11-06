@@ -125,7 +125,8 @@ projects[fb][version] = "3.x-dev"
 ; permissions fix which should allow fb_user to work without failing - rolled into dev by 19/8/2011
 ; projects[fb][patch][1173898] = http://drupal.org/files/issues/fb-permission-1173898-D7-no-prefix.patch
 ; user fix array_flip http://drupal.org/node/1064250
-projects[fb][patch][1064250] = http://drupal.org/files/issues/fb_user.module.patch
+; no longer required
+; projects[fb][patch][1064250] = http://drupal.org/files/issues/fb_user.module.patch
 
 ; libraries for either
 ; projects[] = fbconnect
