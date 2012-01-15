@@ -83,6 +83,8 @@ dependencies[] = commerce_coupon_basic
 ; delivery causes fatal errors
 ; dependencies[] = commerce_delivery
 dependencies[] = commerce_australia
+dependencies[] = commerce_australia_currencydisplay
+dependencies[] = commerce_australia_gst
 
 dependencies[] = devel
 dependencies[] = commerce_devel_generate
