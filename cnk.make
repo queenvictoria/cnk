@@ -65,6 +65,8 @@ libraries[nusoap][download][type] = "get"
 libraries[nusoap][download][url] = "http://downloads.sourceforge.net/project/nusoap/nusoap/0.9.5/nusoap-0.9.5.zip"
 libraries[nusoap][destination] = "libraries"   
 
+projects[commerce_australia][subdir] = "contrib"
+projects[commerce_australia][version] = "1.x-dev"
 projects[commerce_paypal][subdir] = "contrib"
 projects[commerce_paypal][version] = "1.x-dev"
 projects[commerce_stock][subdir] = "contrib"
@@ -98,6 +100,7 @@ projects[devel][subdir] = "developer"
 projects[devel][subdir] = "devel_themer"
 projects[commerce_devel][subdir] = "developer"
 projects[commerce_devel][version] = "1.x-dev"
+projects[module_filter][subdir] = "developer"
 
 ; social bits for commerce
 projects[votingapi][subdir] = "contrib"
@@ -139,5 +142,8 @@ libraries[facebook-php-sdk][download][url] = "http://github.com/facebook/php-sdk
 libraries[facebook-php-sdk][destination] = "libraries"   
 
 ; themes
+projects[tao][subdir] = "contrib"
 projects[tao][version] = 3.0-beta3
+projects[rubik][subdir] = "contrib"
 projects[rubik][version] = 4.0-beta6
+projects[omega][subdir] = "contrib"

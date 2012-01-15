@@ -16,6 +16,7 @@ v	dummy conten
 v	default currencies
 v	ratings
 	
+	australia post ( look to sandbox )
  */
 
 /**
@@ -74,7 +75,8 @@ function _cnk_install() {
 	
 	_cnk_configure_roles();
 	_cnk_configure_currency();
-	_cnk_configure_gst(10);
+//  look to the commerce_australia module
+//	_cnk_configure_gst(10); 
 	_cnk_configure_stock();
 
 //	_cnk_configure_fivestar("product_display");
@@ -86,7 +88,8 @@ function _cnk_install() {
 //  for paypal	
 //	_cnk_configure_payments();
 	
-	_cnk_dummy_content(10);
+//  not working
+//	_cnk_dummy_content(10);
 }
 
 
