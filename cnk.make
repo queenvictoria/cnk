@@ -96,8 +96,9 @@ projects[commerce_product_bundle][version] = "1.x-dev"
 ; ajax cart
 ; git clone http://git.drupal.org/sandbox/webmasterkai/1299260.git dc_cart_ajax
 
+projects[coder][subdir] = "developer"
 projects[devel][subdir] = "developer"
-projects[devel][subdir] = "devel_themer"
+projects[devel_themer][subdir] = "developer"
 projects[commerce_devel][subdir] = "developer"
 projects[commerce_devel][version] = "1.x-dev"
 projects[module_filter][subdir] = "developer"
