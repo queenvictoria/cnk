@@ -2,21 +2,21 @@
 
 /**
  *	cnk profile install hooks - things to do when install is run
-	
 
-TO DO
-	profile specific shortcuts
-v	GST
-	GST rules
-v	roles
-	permissions
-v	dummy conten
-	locale
-	imagecache presets
-v	default currencies
-v	ratings
-	
-	australia post ( look to sandbox )
+
+ TO DO
+ profile specific shortcuts
+ v	GST
+ GST rules
+ v	roles
+ permissions
+ v	dummy conten
+ locale
+ imagecache presets
+ v	default currencies
+ v	ratings
+
+ australia post ( look to sandbox )
  */
 
 /**
@@ -35,26 +35,26 @@ define('KICKSTART_ADMIN_THEME', 'seven');
  * Perform actions to set up the site for this profile.
  */
 function cnk_install() {
-	print "Running standard install\n";
-//	from the drupal standard profile
-	include_once DRUPAL_ROOT . '/profiles/standard/standard.install';
-	standard_install();
-	
-//	Set some variables
-	$acme_settings = array(
-		'image_jpeg_quality' => '90',
-	);
+  print "Running standard install\n";
+  //	from the drupal standard profile
+  include_once DRUPAL_ROOT . '/profiles/standard/standard.install';
+  standard_install();
 
-	foreach ($acme_settings as $v_name => $v_value) {
-		variable_set($v_name, $v_value);
-	}
+  //	Set some variables
+  $acme_settings = array(
+    'image_jpeg_quality' => '90',
+  );
 
-	
-//	our own install
-	include("cnk.settings.inc");
+  foreach ($acme_settings as $v_name => $v_value) {
+    variable_set($v_name, $v_value);
+  }
 
-	print "Running cnk install\n";
-	_cnk_install();
+
+  //	our own install
+  //include("cnk.settings.inc");
+
+  print "Running cnk install\n";
+  _cnk_install();
 }
 
 
@@ -62,303 +62,303 @@ function cnk_install() {
  * Performs additional configuration for the CNK profile
  */
 function _cnk_install() {
-//	more menu items
-//	$set = shortcut_set_load(st('Store administration'));
-//	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
-//	shortcut_set_save($set);
+  //	more menu items
+  //	$set = shortcut_set_load(st('Store administration'));
+  //	$set->links[] =  array('link_path' => 'node/add/product-display', 'link_title' => st('Add product display'));
+  //	shortcut_set_save($set);
 
-	print "Running commerce kickstart install\n";
-//	from the commerce kickstart
-	_commerce_kickstart_install();
-	
-	variable_set('site_default_country', 'AU');
-	
-	_cnk_configure_roles();
-	_cnk_configure_currency();
-//  look to the commerce_australia module
-//	_cnk_configure_gst(10); 
-	_cnk_configure_stock();
+  print "Running commerce kickstart install\n";
+  //	from the commerce kickstart
+  _commerce_kickstart_install();
 
-//	_cnk_configure_fivestar("product_display");
-	_cnk_configure_facebook();
+  variable_set('site_default_country', 'AU');
 
-//  for share this
-//	_cnk_configure_share();
+  _cnk_configure_roles();
+  _cnk_configure_currency();
+  //  look to the commerce_australia module
+  //	_cnk_configure_gst(10);
+  _cnk_configure_stock();
 
-//  for paypal	
-//	_cnk_configure_payments();
-	
-//  not working
-//	_cnk_dummy_content(10);
+  //	_cnk_configure_fivestar("product_display");
+  //_cnk_configure_facebook();
+
+  //  for share this
+  //	_cnk_configure_share();
+
+  //  for paypal
+  //	_cnk_configure_payments();
+
+  //  not working
+  //	_cnk_dummy_content(10);
 }
 
 
 function _cnk_configure_stock($types=array("product")) {
-	if ( module_exists("commerce_stock") ) {
-		module_load_include("module", "commerce_stock");
-		foreach($types as $type) {
-      		commerce_stock_create_instance('commerce_stock', 'number_integer', TRUE, 'commerce_product', $type, t('Stock'));
-		}
-	}
+  if ( module_exists("commerce_stock") ) {
+    module_load_include("module", "commerce_stock");
+    foreach($types as $type) {
+      commerce_stock_create_instance('commerce_stock', 'number_integer', TRUE, 'commerce_product', $type, t('Stock'));
+    }
+  }
 }
 
 
 function _cnk_configure_payments() {
-	if ( module_exists("commerce_paypal_wps") ) {
-		db_insert('rules_config')
-			->fields(array(
-				'name' => 'commerce_payment_paypal_wps',
-				'label' => 'PayPal WPS',
-				'plugin' => 'reaction rule',
-				'active' => 1,
-				'status' => 3,
-				'module' => 'commerce_payment',
-				'data' => $data
-//				serialize(array(
-				//	'components' => array(),
-				//	'include_tax'=>'gst'
-//				))
-			))
-		->execute();
-		
-	}
+  if ( module_exists("commerce_paypal_wps") ) {
+    db_insert('rules_config')
+      ->fields(array(
+        'name' => 'commerce_payment_paypal_wps',
+        'label' => 'PayPal WPS',
+        'plugin' => 'reaction rule',
+        'active' => 1,
+        'status' => 3,
+        'module' => 'commerce_payment',
+        'data' => $data
+        //				serialize(array(
+        //	'components' => array(),
+        //	'include_tax'=>'gst'
+        //				))
+      ))
+      ->execute();
+
+  }
 }
 
 
 function _cnk_configure_share() {
-	if ( module_exists("sharethis") ) {
+  if ( module_exists("sharethis") ) {
 
-		$data = array(
-			'buttons' => 'stbc_hcount',
-			'node_type' => 'product_display',
-			'publisherID' => '',
-			'services' => '"Email:email","Tweet:twitter","Facebook:facebook","Fblike:fblike","Plusone:plusone"',
-			'viewMode' => '1',	//	0 shows in teaser too
-			'widget' => 'st_multi',
-		);
-		
-		foreach ( $data as $key=>$value ) {
-			db_insert('st_table')
-				->fields(array(
-					'st_option' => $key,
-					'st_value' => $value,
-				))
-			->execute();
-		}
-	}
+    $data = array(
+      'buttons' => 'stbc_hcount',
+      'node_type' => 'product_display',
+      'publisherID' => '',
+      'services' => '"Email:email","Tweet:twitter","Facebook:facebook","Fblike:fblike","Plusone:plusone"',
+      'viewMode' => '1',	//	0 shows in teaser too
+      'widget' => 'st_multi',
+    );
+
+    foreach ( $data as $key=>$value ) {
+      db_insert('st_table')
+        ->fields(array(
+          'st_option' => $key,
+          'st_value' => $value,
+        ))
+        ->execute();
+    }
+  }
 }
 
 
 function _cnk_configure_facebook() {
-//	need to link in app for anything to work
-//	print "_cnk_configure_facebook\n";
-	if ( module_exists("fb_app") ) {
-	
-		$result = module_enable(array("fb", "fb_app", "fb_connect", "fb_user", "fb_registration"));
-//	include drupal_get_path('module', 'fb') . '/fb.admin.inc';
-//		module_load_include('inc', 'fb', 'fb.admin');
-		module_load_include('inc', 'fb_app');
-		module_load_include('inc', 'fb_app', 'fb_app.admin');
-//		print "Loaded fb_app\n";
-		$app_label = 'connect';
-		
-		$form_state = array();
-		$form_state['values']['label'] = $app_label;
-		$form_state['values']['status'] = 1;
-		$form_state['values']['id'] = FB_KEY;
-		$form_state['values']['apikey'] = FB_KEY;
-		$form_state['values']['secret'] = FB_SECRET;
-		$form_state['values']['fb_app_data']['fb_app']['set_app_props'] = 1;
-//	this is the only one that doesn't get stored when calling the method directly
-		$form_state['values']['fb_app_data']['fb_connect']['primary'] = 1;
-		$form_state['values']['fb_app_data']['fb_user']['create_account'] = 2;
-		$form_state['values']['fb_app_data']['fb_user']['map_account'][2] = 2;
-		$form_state['values']['fb_app_data']['fb_user']['map_account'][3] = 3;
-		$form_state['values']['fb_app_data']['fb_permission']['prompt']['email'] = 'email';
-		$form_state['values']['fb_app_data']['fb_permission']['map']['contact_email'] = 'contact_email';
-		$form_state['values']['fb_app_data']['fb_permission']['map']['user_birthday'] = 'user_birthday';
-		$form_state['values']['fb_app_data']['fb_permission']['map']['user_mobile_phone'] = 'user_mobile_phone';
-		$form_state['values']['op'] = st('Save');
-		
-//		print "Printing form\n";
-//		print_r($form_state);
-		$form_state['values']['op'] = t('Create new account');
+  //	need to link in app for anything to work
+  //	print "_cnk_configure_facebook\n";
+  if ( module_exists("fb_app") ) {
 
-//		drupal_form_submit('fb_app_admin_form', $form_state);
-//	this runs but doesn't create an app
-//		$result = drupal_form_submit('fb_app_edit_form', $form_state);
-//	this runs and fails (not a valid callback - probably because the form fails .)
-//		$result = drupal_form_submit('fb_app_admin_form', $form_state);
-		
-//	what about calling the method directly ?
-		$result = fb_app_admin_form_submit(null, $form_state);
-		variable_set('fb_connect_primary_label', $app_label);
-		
-//	this results in fb_connect remaining unset-so do it again
-//	still doesn't work . must be a typ-oh
-/*
-	$num_updated = db_update('fb_app') // Table name no longer needs {}
-		->fields(array(
-			'data' => serialize($form_state['values']['fb_app_data'])
-		))
-		->condition('fba_id', 1)
-		->execute();
-*/
-	
-//		print "Printing results\n";
-//		print_r($result);
-/*
-		$data = Array (
-			'fb_app' => Array (
-				'set_app_props' => 1
-			),
-			'fb_connect' => Array (
-				'primary' => 1
-			),
-			'fb_user' => Array (
-				'create_account' => 2,
-				'map_account' => Array (
-					2 => 2,
-					3 => 3
-				),
-				'new_user_rid' => 0,
-				'connected_user_rid' => 0
-			)
-		);
+    $result = module_enable(array("fb", "fb_app", "fb_connect", "fb_user", "fb_registration"));
+    //	include drupal_get_path('module', 'fb') . '/fb.admin.inc';
+    //		module_load_include('inc', 'fb', 'fb.admin');
+    module_load_include('inc', 'fb_app');
+    module_load_include('inc', 'fb_app', 'fb_app.admin');
+    //		print "Loaded fb_app\n";
+    $app_label = 'connect';
 
-		db_insert('fb_app')
-			->fields(array(
-				'title' => 'connect',
-				'label' => 'connect',
-				'id' => FB_KEY,
-				'apikey' => FB_KEY,
-				'secret' => FB_SECRET,
-				'data' => $data
-			))
-		->execute();
-*/
+    $form_state = array();
+    $form_state['values']['label'] = $app_label;
+    $form_state['values']['status'] = 1;
+    $form_state['values']['id'] = FB_KEY;
+    $form_state['values']['apikey'] = FB_KEY;
+    $form_state['values']['secret'] = FB_SECRET;
+    $form_state['values']['fb_app_data']['fb_app']['set_app_props'] = 1;
+    //	this is the only one that doesn't get stored when calling the method directly
+    $form_state['values']['fb_app_data']['fb_connect']['primary'] = 1;
+    $form_state['values']['fb_app_data']['fb_user']['create_account'] = 2;
+    $form_state['values']['fb_app_data']['fb_user']['map_account'][2] = 2;
+    $form_state['values']['fb_app_data']['fb_user']['map_account'][3] = 3;
+    $form_state['values']['fb_app_data']['fb_permission']['prompt']['email'] = 'email';
+    $form_state['values']['fb_app_data']['fb_permission']['map']['contact_email'] = 'contact_email';
+    $form_state['values']['fb_app_data']['fb_permission']['map']['user_birthday'] = 'user_birthday';
+    $form_state['values']['fb_app_data']['fb_permission']['map']['user_mobile_phone'] = 'user_mobile_phone';
+    $form_state['values']['op'] = st('Save');
 
-	//	need to turn on fb_user
-	//	need permission for email for fb_user
-	}
-	
-//	a different module that just handles auth
-	if ( module_exists("fbconnect") ) {
-		variable_set('fbconnect_appid', FB_KEY);
-		variable_set('fbconnect_skey', FB_SECRET);
-		variable_set('fbconnect_language_code', "en_AU");
-	}
+    //		print "Printing form\n";
+    //		print_r($form_state);
+    $form_state['values']['op'] = t('Create new account');
+
+    //		drupal_form_submit('fb_app_admin_form', $form_state);
+    //	this runs but doesn't create an app
+    //		$result = drupal_form_submit('fb_app_edit_form', $form_state);
+    //	this runs and fails (not a valid callback - probably because the form fails .)
+    //		$result = drupal_form_submit('fb_app_admin_form', $form_state);
+
+    //	what about calling the method directly ?
+    $result = fb_app_admin_form_submit(null, $form_state);
+    variable_set('fb_connect_primary_label', $app_label);
+
+    //	this results in fb_connect remaining unset-so do it again
+    //	still doesn't work . must be a typ-oh
+    /*
+    $num_updated = db_update('fb_app') // Table name no longer needs {}
+        ->fields(array(
+            'data' => serialize($form_state['values']['fb_app_data'])
+        ))
+        ->condition('fba_id', 1)
+        ->execute();
+    */
+
+    //		print "Printing results\n";
+    //		print_r($result);
+    /*
+        $data = Array (
+            'fb_app' => Array (
+                'set_app_props' => 1
+            ),
+            'fb_connect' => Array (
+                'primary' => 1
+            ),
+            'fb_user' => Array (
+                'create_account' => 2,
+                'map_account' => Array (
+                    2 => 2,
+                    3 => 3
+                ),
+                'new_user_rid' => 0,
+                'connected_user_rid' => 0
+            )
+        );
+
+        db_insert('fb_app')
+            ->fields(array(
+                'title' => 'connect',
+                'label' => 'connect',
+                'id' => FB_KEY,
+                'apikey' => FB_KEY,
+                'secret' => FB_SECRET,
+                'data' => $data
+            ))
+        ->execute();
+    */
+
+    //	need to turn on fb_user
+    //	need permission for email for fb_user
+  }
+
+  //	a different module that just handles auth
+  if ( module_exists("fbconnect") ) {
+    variable_set('fbconnect_appid', FB_KEY);
+    variable_set('fbconnect_skey', FB_SECRET);
+    variable_set('fbconnect_language_code', "en_AU");
+  }
 }
 
 
 /**
- *	Create a dummy product and product display	
+ *	Create a dummy product and product display
  */
 function _cnk_dummy_content($num_products = 10) {
 /*
 //	taken from commerce_devel_generate.drush.inc
-	module_load_include('inc', 'commerce_devel_generate', 'devel_generate');
-	$values = array(
-		'kill_products' => 0,
-		'num_products' => $num_products,
-		'product_types' => array('products'),
-		'title_length' => 2, // @todo: Make this configurable.
-	);
+    module_load_include('inc', 'commerce_devel_generate', 'devel_generate');
+    $values = array(
+        'kill_products' => 0,
+        'num_products' => $num_products,
+        'product_types' => array('products'),
+        'title_length' => 2, // @todo: Make this configurable.
+    );
 //	doesn't do gst or stock
-	commerce_devel_generate_products(array('values' => $values));
-	
-*/	
+    commerce_devel_generate_products(array('values' => $values));
 
-	for ( $i = 0; $i < $num_products; $i++ ) {
-		db_insert('commerce_product')
-			->fields(array(
-				'sku' => 'test-' . $i,
-				'type' => 'product',
-				'title' => 'Test ' . $i,
-				'language' => 'und',
-				'status' => 1,
-				'uid' => $i
-			))
-		->execute();
-	
-		db_insert('field_data_commerce_price')
-			->fields(array(
-				'entity_type' => 'commerce_product',
-				'bundle' => 'product',
-				'deleted' => 0,
-				'entity_id' => $i+1,
-				'revision_id' => 1,
-				'language' => 'und',
-				'delta' => 0,
-				'commerce_price_amount' => 1100 * ($i+1),
-				'commerce_price_currency_code' => 'AUD',
-				'commerce_price_data' => serialize(array(
-					'components' => array(),
-					'include_tax'=>'gst'
-				))
-			))
-		->execute();
-		
-		if ( module_exists("commerce_stock") ) {
-			db_insert('field_data_commerce_stock')
-				->fields(array(
-					'entity_type' => 'commerce_product',
-					'bundle' => 'product',
-					'deleted' => 0,
-					'entity_id' => $i+1,
-					'revision_id' => 1,
-					'language' => 'und',
-					'delta' => 0,
-					'commerce_stock_value' => rand(0, 100)
-				))
-			->execute();
-		}
-		
-		$node = new StdClass();
-		$node->type = 'product_display';
-		node_object_prepare($node);
-//		print_r($node);
-		$node->title = 'Test ' . $i;
-		$node->status = 1;
-		$node->promote = 1;
-		$node->uid = 1;
-		$node->body = "Body Body body";
-		$node->language = LANGUAGE_NONE;
-#		$node->language = "und";
-		
-		module_load_include('inc', 'commerce_pdm', 'commerce_pdm');
-		if ( function_exists('_commerce_pdm_get_product_reference_fields') ) {
-			$field_names = _commerce_pdm_get_product_reference_fields($node);
-			$reference_field = $field_names[0];
-//	doesnt work, causes errors.
-//	Warning: array_flip() [function.array-flip]: Can only flip STRING and INTEGER values! in DrupalDefaultEntityController->load() (line 177 of /Users/rossetti/Documents/jobs/laudanum/cashmereandkaye/public_html/drupal-commerce/includes/entity.inc).
-//			$node->{$field_names[0]}['und'][0]['value'] = $i;
-		} else {
-			$reference_field = 'field_product';
-			print "Module commerce_pdm not loaded\n";
-		}
-		
-		$node_lanugage = $node->language;
-		$product_id = $i+1;
-		$node->{$reference_field}[$node_lanugage][] = array('product_id' => $product_id);
-		
-##		$node->field_data_commerce_product[0]['value'] = $i
-#		$key = 'data_commerce_product';
-//		$node->{'field_'.$key}[$node->language][0]['value'] = $value;
-		node_save($node);
+ */
+
+  for ( $i = 0; $i < $num_products; $i++ ) {
+    db_insert('commerce_product')
+      ->fields(array(
+        'sku' => 'test-' . $i,
+        'type' => 'product',
+        'title' => 'Test ' . $i,
+        'language' => 'und',
+        'status' => 1,
+        'uid' => $i
+      ))
+      ->execute();
+
+    db_insert('field_data_commerce_price')
+      ->fields(array(
+        'entity_type' => 'commerce_product',
+        'bundle' => 'product',
+        'deleted' => 0,
+        'entity_id' => $i+1,
+        'revision_id' => 1,
+        'language' => 'und',
+        'delta' => 0,
+        'commerce_price_amount' => 1100 * ($i+1),
+        'commerce_price_currency_code' => 'AUD',
+        'commerce_price_data' => serialize(array(
+          'components' => array(),
+          'include_tax'=>'gst'
+        ))
+      ))
+      ->execute();
+
+    if ( module_exists("commerce_stock") ) {
+      db_insert('field_data_commerce_stock')
+        ->fields(array(
+          'entity_type' => 'commerce_product',
+          'bundle' => 'product',
+          'deleted' => 0,
+          'entity_id' => $i+1,
+          'revision_id' => 1,
+          'language' => 'und',
+          'delta' => 0,
+          'commerce_stock_value' => rand(0, 100)
+        ))
+        ->execute();
+    }
+
+    $node = new StdClass();
+    $node->type = 'product_display';
+    node_object_prepare($node);
+    //		print_r($node);
+    $node->title = 'Test ' . $i;
+    $node->status = 1;
+    $node->promote = 1;
+    $node->uid = 1;
+    $node->body = "Body Body body";
+    $node->language = LANGUAGE_NONE;
+    #		$node->language = "und";
+
+    module_load_include('inc', 'commerce_pdm', 'commerce_pdm');
+    if ( function_exists('_commerce_pdm_get_product_reference_fields') ) {
+      $field_names = _commerce_pdm_get_product_reference_fields($node);
+      $reference_field = $field_names[0];
+      //	doesnt work, causes errors.
+      //	Warning: array_flip() [function.array-flip]: Can only flip STRING and INTEGER values! in DrupalDefaultEntityController->load() (line 177 of /Users/rossetti/Documents/jobs/laudanum/cashmereandkaye/public_html/drupal-commerce/includes/entity.inc).
+      //			$node->{$field_names[0]}['und'][0]['value'] = $i;
+    } else {
+      $reference_field = 'field_product';
+      print "Module commerce_pdm not loaded\n";
+    }
+
+    $node_lanugage = $node->language;
+    $product_id = $i+1;
+    $node->{$reference_field}[$node_lanugage][] = array('product_id' => $product_id);
+
+    ##		$node->field_data_commerce_product[0]['value'] = $i
+    #		$key = 'data_commerce_product';
+    //		$node->{'field_'.$key}[$node->language][0]['value'] = $value;
+    node_save($node);
 /*
-		db_insert('node')
-			->fields(array(
-				'type' => 'product_display',
-				'title' => 'Test ' . $i,
-				'uid' => 1,
-				'language' => 'und',
-				'promote' => 1,
-				'status' => 1
-			))
-		->execute();
-*/	
-	}
+        db_insert('node')
+            ->fields(array(
+                'type' => 'product_display',
+                'title' => 'Test ' . $i,
+                'uid' => 1,
+                'language' => 'und',
+                'promote' => 1,
+                'status' => 1
+            ))
+        ->execute();
+ */
+  }
 }
 
 
@@ -366,23 +366,23 @@ function _cnk_dummy_content($num_products = 10) {
  *	add the storekeeper role
  */
 function _cnk_configure_roles() {
-	//	permissions authenticated users need to view their own orders
-	//	View own orders of any type	
-	user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('view own commerce_order entities'));
-	
-	//	storekeeper role
-	$storeadmin_role = new stdClass();
-	$storeadmin_role->name = 'storekeeper';
-	$storeadmin_role->weight = 2;
-	user_role_save($storeadmin_role);
-//  user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
+  //	permissions authenticated users need to view their own orders
+  //	View own orders of any type
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('view own commerce_order entities'));
+
+  //	storekeeper role
+  $storeadmin_role = new stdClass();
+  $storeadmin_role->name = 'storekeeper';
+  $storeadmin_role->weight = 2;
+  user_role_save($storeadmin_role);
+  //  user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
   // Set this as the administrator role.
-//  variable_set('user_admin_role', $admin_role->rid);
+  //  variable_set('user_admin_role', $admin_role->rid);
 
   // Assign user 1 the "storekeeper" role.
-	db_insert('users_roles')
-		->fields(array('uid' => 1, 'rid' => $storeadmin_role->rid))
-		->execute();
+  db_insert('users_roles')
+    ->fields(array('uid' => 1, 'rid' => $storeadmin_role->rid))
+    ->execute();
 }
 
 
@@ -390,11 +390,11 @@ function _cnk_configure_roles() {
  * set the default and available currencies
  */
 function _cnk_configure_currency() {
-//	default currency
-	variable_set('commerce_default_currency', 'AUD');
-//	enabled currencies
-	$currencies = array('AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'JPY', 'NZD', 'SGD', 'USD');
-	variable_set('commerce_enabled_currencies', $currencies);	
+  //	default currency
+  variable_set('commerce_default_currency', 'AUD');
+  //	enabled currencies
+  $currencies = array('AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'JPY', 'NZD', 'SGD', 'USD');
+  variable_set('commerce_enabled_currencies', $currencies);
 }
 
 
@@ -402,18 +402,18 @@ function _cnk_configure_currency() {
  *	setup GST. pass in the rate (defaults to 10%)
  */
 function _cnk_configure_gst($rate=10) {
-	//	gst
+  //	gst
   db_insert('commerce_tax_rate')
     ->fields(array(
-		'name' => 'gst',
-		'title' => 'GST',
-		'display_title' => 'GST',
-		'rate' => $rate/100,
-		'type' => 'vat',
-		'description' => 'Australian Goods and Services tax (10%)',
-//		'rules_component' => 1,
-		'module' => 'commerce_tax_ui'
-	))
+      'name' => 'gst',
+      'title' => 'GST',
+      'display_title' => 'GST',
+      'rate' => $rate/100,
+      'type' => 'vat',
+      'description' => 'Australian Goods and Services tax (10%)',
+      //		'rules_component' => 1,
+      'module' => 'commerce_tax_ui'
+    ))
     ->execute();
 }
 
@@ -422,7 +422,7 @@ function _cnk_configure_gst($rate=10) {
  *	allow product types to use fivestar
  */
 function _cnk_configure_fivestar($content_type) {
-	if ( module_exists("fivestar") ) {
+  if ( module_exists("fivestar") ) {
 /*
 -	fivestar_feedback_product_display	i:1;
 -	fivestar_labels_enable_product_display	i:1;
@@ -437,37 +437,37 @@ function _cnk_configure_fivestar($content_type) {
 -	fivestar_title_product_display	i:1;
 -	fivestar_unvote_product_display	i:0;
 -	fivestar_widget	s:52:"sites/all/modules/fivestar/widgets/hearts/hearts.css";
-*/
-		$fivestar_path = drupal_get_path("module", "fivestar");
-//	which widget are we using?
-		variable_set("fivestar_widget", $fivestar_path . "/widgets/hearts/hearts.css");
-		variable_set("fivestar_tags", "vote");
-//	enable for our content type
-		variable_set("fivestar_" . $content_type, 1);
-//	number of stars
-		variable_set("fivestar_stars_" . $content_type, 5);
-//	position of stars
-		variable_set("fivestar_position_" . $content_type, "below");
-		variable_set("fivestar_position_teaser_" . $content_type, "below");
-//	display of stars
-		variable_set("fivestar_style_" . $content_type, "average");
-		variable_set("fivestar_text_" . $content_type, "dual");
-		variable_set("fivestar_title_" . $content_type, 1);
-		variable_set("fivestar_feedback_" . $content_type, 1);
-		variable_set("fivestar_unvote_" . $content_type, 0);
-//	labels 
-		variable_set("fivestar_labels_enable_" . $content_type, 1);
-		variable_set("fivestar_labels_" . $content_type, 
-			array(
-				"Cancel rating",
-				"Poor",
-				"Okay",
-				"Good",
-				"Great",
-				"Awesome"
-			)
-		);
-	}
+ */
+    $fivestar_path = drupal_get_path("module", "fivestar");
+    //	which widget are we using?
+    variable_set("fivestar_widget", $fivestar_path . "/widgets/hearts/hearts.css");
+    variable_set("fivestar_tags", "vote");
+    //	enable for our content type
+    variable_set("fivestar_" . $content_type, 1);
+    //	number of stars
+    variable_set("fivestar_stars_" . $content_type, 5);
+    //	position of stars
+    variable_set("fivestar_position_" . $content_type, "below");
+    variable_set("fivestar_position_teaser_" . $content_type, "below");
+    //	display of stars
+    variable_set("fivestar_style_" . $content_type, "average");
+    variable_set("fivestar_text_" . $content_type, "dual");
+    variable_set("fivestar_title_" . $content_type, 1);
+    variable_set("fivestar_feedback_" . $content_type, 1);
+    variable_set("fivestar_unvote_" . $content_type, 0);
+    //	labels
+    variable_set("fivestar_labels_enable_" . $content_type, 1);
+    variable_set("fivestar_labels_" . $content_type,
+      array(
+        "Cancel rating",
+        "Poor",
+        "Okay",
+        "Good",
+        "Great",
+        "Awesome"
+      )
+    );
+  }
 }
 
 
@@ -496,8 +496,8 @@ function _commerce_kickstart_install() {
   }
   $query->execute();
 
-//	_commerce_kickstart_create_product();
-	
+  //	_commerce_kickstart_create_product();
+
   // Give checkout access to anonymous and authenticated users.
   user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access checkout'));
   user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access checkout'));
@@ -523,7 +523,7 @@ function _commerce_kickstart_install() {
 
 
 function _commerce_kickstart_create_product() {
-	 // Insert a product display node type into the database.
+  // Insert a product display node type into the database.
   $types = array(
     array(
       'type' => 'product_display',
