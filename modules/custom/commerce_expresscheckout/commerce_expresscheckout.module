@@ -6,11 +6,13 @@
 	-	validation (?) is mirroring billing into shipping (can't change shipping)
 	-	should this be a multistep form ? ( see examples module )
 	-	should this be multiple forms on one page ?
+	- add test credentials
 */
+
+define("CEC_TEST_MODE", TRUE);
 
 function commerce_expresscheckout_preprocess_html(&$variables) {
 //      drupal_add_js(drupal_get_path('module', 'views') . '/js/views-contextual.js', array('group' => JS_LIBRARY, 'weight' => -1));
-
 	drupal_add_js(drupal_get_path('module', 'commerce_expresscheckout'), "/js/commerce_expresscheckout.js");
 }
 
@@ -55,7 +57,7 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 	$pages = commerce_checkout_pages();
 	$panes = commerce_checkout_panes(array('enabled' => TRUE));
 
-	$debug = TRUE;
+	$debug = CEC_TEST_MODE;
 	$i = 1;
 //	iterate over each of the pages (pane sets) looking for panes that belong in it
 	foreach ($pages as $page_id => $checkout_page) {
@@ -77,15 +79,14 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 
 		$k = 1;
 		foreach ($panes as $pane_id => $checkout_pane_local) {
-//			print "<h2>$pane_id</h2>";
-//	the redirect panes cause redirection - we can't have that
+//	the redirect panes cause redirection (strangely) - we can't have that
 			if ( strpos($pane_id, 'redirect') )
 				continue;
 			if ( $checkout_pane_local['page'] == $page_id ) {
 				$form[$page_id . '_fieldset']['#count']++;
 				
 				$callback = commerce_checkout_pane_callback($checkout_pane_local, 'checkout_form');
-        		$pane_data = $callback($form, $form_state, $checkout_pane_local, $order);
+        $pane_data = $callback($form, $form_state, $checkout_pane_local, $order);
 //	from commerce_checkout.checkout_pane.inc
 //	Only display the pane if there is data in the pane.
 				if (!empty($pane_data)) {
@@ -134,7 +135,9 @@ function commerce_expresscheckout_form($form, &$form_state, $order_id) {
 }
 
 
-function _commerce_expresscheckout_test($form, $form_state) { return "TEST"; }
+function _commerce_expresscheckout_test($form, $form_state) { 
+  return "TEST"; 
+}
 	
 	
 /* 	
@@ -223,7 +226,12 @@ function _commerce_expresscheckout_form_extend(&$form) {
 		'#form_id' => "commerce_expresscheckout_form",
 	);
 */
-//	krumo($form);
+
+//  if we're testing add test data.
+  if ( CEC_TEST_MODE ) {
+    $form['checkout_fieldset']['account_fieldset']['data']['login']['mail']['#default_value'] = 'user@example.com';
+//    $form['checkout_fieldset']['customer_profile_billing_fieldset']['commerce_customer_address']['und'][0]['name_line']['#default_value'] = 'user@example.com';
+  }
 
 }
 
