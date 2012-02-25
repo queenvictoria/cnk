@@ -216,9 +216,16 @@ function commerce_payment_eway_submit_form($payment_method, $pane_values, $check
 	$form = commerce_payment_credit_card_form(array('code' => ''));
 //	token payments
 	$settings = $payment_method['settings'];
-  	$mode = _commerce_payment_eway_get_data('mode', $settings);
-	if ( $user->uid && $mode == 'token' ) {
-		$customer = _commerce_payment_eway_get_token_detail($user->uid);
+	$mode = _commerce_payment_eway_get_data('mode', $settings);
+//   we're using token payments
+	if ( $mode == 'token' ) {
+//  and our user is logged in
+	  if ( $user->uid ) {
+		  $customer = _commerce_payment_eway_get_token_detail($user->uid);
+		} else {
+		  $customer = array('ManagedCustomerID'=>null);
+		}
+//  we've got saved data
 		if ( $customer['ManagedCustomerID'] ) {
 			$form['credit_card']['ManagedCustomerID'] = array(
     			'#type' => 'textfield',
@@ -249,7 +256,7 @@ function commerce_payment_eway_submit_form($payment_method, $pane_values, $check
 					if ( jQuery('#edit-commerce-payment-payment-details-credit-card-update-card').not(':checked') ) {
 						jQuery('.toggle-disabled').parent('div').addClass('form-disabled');
 					}
-					
+				
 //	check the update checkbox					
 					jQuery('#edit-commerce-payment-payment-details-credit-card-number,#edit-commerce-payment-payment-details-credit-card-exp-month,#edit-commerce-payment-payment-details-credit-card-exp-year').live('change', 
 						function(){
@@ -275,18 +282,28 @@ function commerce_payment_eway_submit_form($payment_method, $pane_values, $check
 					);
 				});
 			", 'inline');
-		} else {
-  			$mode = _commerce_payment_eway_get_data('mode', $settings);
-			$form['credit_card']['save_details'] = array(
-    			'#weight' => -10,
-    			'#type' => 'checkbox',
-				'#title' => t('Keep my details on file'),
-				'#default' => 1,
-				'#description' => t('Your details will be stored securely at the payment gateway'),
-			);
+	  } else {
+//  no saved data yet
+		  $mode = _commerce_payment_eway_get_data('mode', $settings);
+		  $form['credit_card']['save_details'] = array(
+  			'#weight' => -10,
+  			'#type' => 'checkbox',
+			  '#title' => t('Keep my details on file'),
+			  '#default' => 1,
+			  '#description' => t('Your details will be stored securely at the payment gateway'),
+		  );
 		}
+	} else {
+// not token	  
 	}
-  	return $form;
+
+//  no credit card set and we're in test mode
+  if ( commerce_payment_eway_in_testing_mode($settings) && $form['credit_card']['number']['#default_value'] == '' ) {
+    $form['credit_card']['number']['#default_value'] = '4444333322221111';
+    $form['credit_card']['code']['#default_value'] = '123';
+  }
+
+	return $form;
 }
 
 
@@ -299,8 +316,8 @@ function commerce_payment_eway_submit_form_validate($payment_method, $pane_form,
 	//	if we're using token payments and we have a token then this is already valid
 	//	unless we're updating the card then we need to validate that first
 	$settings = $payment_method['settings'];
-  	$mode = _commerce_payment_eway_get_data('mode', $settings);
-	if ( $mode == 'token' && $pane_values['credit_card']['ManagedCustomerID'] ) {
+  $mode = _commerce_payment_eway_get_data('mode', $settings);
+	if ( $mode == 'token' && array_key_exists('ManagedCustomerID', $pane_values['credit_card']) ) {
 //	@tofix - creditcard number doesn't transfer (it returns the xxxx number to here). is this because its disabled ?
 //		error_log(var_export($pane_values['credit_card'], TRUE));
 		if ( $pane_values['credit_card']['update_card'] ) {
