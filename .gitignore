@@ -1,1 +1,5 @@
 cnk.settings.inc
+modules/contrib
+modules/developer
+themes/contrib
+libraries
